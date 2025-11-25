@@ -1,5 +1,6 @@
 -- Database and defaults
-CREATE DATABASE IF NOT EXISTS employeeData CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+DROP DATABASE IF EXISTS employeeData;
+CREATE DATABASE employeeData CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
 USE employeeData;
 
 -- Optional: enforce foreign key checks

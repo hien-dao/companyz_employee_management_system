@@ -1,7 +1,7 @@
 USE employeeData;
 
 /* ============================================================
-   07_security_schema.sql
+   06_security_schema.sql
    Purpose:
    - Defines user accounts and role-based access control (RBAC).
    - Supports permissions assigned to roles, and roles assigned

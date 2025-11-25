@@ -25,3 +25,4 @@ CREATE TABLE employees (
 -- Indexes for fast search
 CREATE INDEX idx_employees_name ON employees (lname, fname);
 CREATE INDEX idx_employees_ssn_hash ON employees (ssn_hash);
+

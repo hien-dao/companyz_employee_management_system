@@ -26,7 +26,7 @@ CREATE TABLE employee_status (
   ) NOT NULL,
   hire_date DATE NOT NULL,                     -- initial hire date
   termination_date DATE DEFAULT NULL,          -- final termination date if applicable
-  effective_start DATE NOT NULL DEFAULT CURRENT_DATE, -- when this status became effective
+  effective_start DATE NOT NULL DEFAULT (CURRENT_DATE), -- when this status became effective
   effective_end DATE DEFAULT NULL,             -- when this status ended (NULL if current)
   FOREIGN KEY (empid) REFERENCES employees(empid) ON DELETE CASCADE
 );

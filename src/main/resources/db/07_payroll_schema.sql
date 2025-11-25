@@ -1,7 +1,7 @@
 USE employeeData;
 
 /* ============================================================
-   06_payroll_schema.sql
+   07_payroll_schema.sql
    Purpose:
    - Defines payroll structures for employees.
    - Separates payroll runs (monthly or periodic batches) from
