@@ -8,7 +8,6 @@ USE employeeData;
 
 CREATE TABLE employees (
   empid INT AUTO_INCREMENT PRIMARY KEY,
-  employee_number VARCHAR(32) NOT NULL UNIQUE,      -- stable external ID
   fname VARCHAR(65) NOT NULL,
   lname VARCHAR(65) NOT NULL,
   employment_type_id INT NOT NULL,

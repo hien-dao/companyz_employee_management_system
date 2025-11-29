@@ -1,5 +1,34 @@
 USE employeeData;
 
+-- Clear existing data to allow re-running the seed safely.
+-- Deletes are ordered to avoid foreign key constraint errors.
+SET FOREIGN_KEY_CHECKS = 0;
+
+DELETE FROM user_roles;
+DELETE FROM user_employee_link;
+DELETE FROM employee_contact;
+DELETE FROM employee_demographic;
+DELETE FROM employee_division;
+DELETE FROM employee_job_title;
+DELETE FROM payroll;
+DELETE FROM payroll_runs;
+DELETE FROM salary_history;
+DELETE FROM auth_events;
+DELETE FROM change_log;
+DELETE FROM employees;
+DELETE FROM job_titles;
+DELETE FROM divisions;
+DELETE FROM users;
+DELETE FROM roles;
+DELETE FROM contact_types;
+DELETE FROM cities;
+DELETE FROM states;
+DELETE FROM countries;
+DELETE FROM employment_types;
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
 -- Seed data for basic testing. Safe dummy values only.
 
 -- Reference data
@@ -31,20 +60,12 @@ ON DUPLICATE KEY UPDATE type_name = VALUES(type_name);
 INSERT INTO roles (role_id, role_name, description)
 VALUES (1, 'HR_ADMIN', 'HR administrators'), (2, 'REGULAR_EMPLOYEE', 'Standard employee role')
 ON DUPLICATE KEY UPDATE role_name = VALUES(role_name);
-
-INSERT INTO permissions (permission_id, permission_name, description)
-VALUES (1, 'UPDATE_EMPLOYEE_DATA', 'Modify employee records'),
-       (2, 'SEE_PAY_STATEMENTS', 'View pay statements'),
-       (3, 'UPDATE_EMPLOYEE_SALARY', 'Change employee salary')
-ON DUPLICATE KEY UPDATE permission_name = VALUES(permission_name);
-
-INSERT INTO role_permissions (role_id, permission_id)
-VALUES (1,1),(1,2),(1,3),(2,2)
-ON DUPLICATE KEY UPDATE role_id = VALUES(role_id);
+-- Note: granular permissions and role_permissions mapping removed.
+-- Role assignments are seeded below using `user_roles` only.
 
 -- Admin user (dummy password hex for 'password')
-INSERT INTO users (user_id, username, email, password_hash, password_salt, is_active)
-VALUES (1, 'admin', 'admin@example.com', UNHEX('70617373776F7264'), UNHEX('73616C74'), 1)
+INSERT INTO users (user_id, username, password_hash, password_salt, is_active)
+VALUES (1, 'admin', UNHEX('70617373776F7264'), UNHEX('73616C74'), 1)
 ON DUPLICATE KEY UPDATE username = VALUES(username);
 
 INSERT INTO user_roles (user_id, role_id)
@@ -52,19 +73,18 @@ VALUES (1,1)
 ON DUPLICATE KEY UPDATE user_id = VALUES(user_id);
 
 -- Divisions and job titles
-INSERT INTO divisions (divid, name, cityid, address_line1, address_line2, stateid, countryid, zip_code, is_active)
-VALUES (1, 'Engineering', 1, '100 Market St', NULL, 1, 1, '94103', 1)
+INSERT INTO divisions (divid, name, description, cityid, address_line1, address_line2, stateid, countryid, zip_code, is_active)
+VALUES (1, 'Engineering', 'Engineering division responsible for product development', 1, '100 Market St', NULL, 1, 1, '94103', 1)
 ON DUPLICATE KEY UPDATE name = VALUES(name);
 
-INSERT INTO job_titles (job_title_id, job_title)
-VALUES (1, 'Software Engineer')
+INSERT INTO job_titles (job_title_id, job_title, description)
+VALUES (1, 'Software Engineer', 'Designs, develops, and maintains software systems')
 ON DUPLICATE KEY UPDATE job_title = VALUES(job_title);
 
 -- One employee (uses employment_type_id = 1)
-INSERT INTO employees (empid, employee_number, fname, lname, employment_type_id, salary, ssn_last4, ssn_hash, ssn_enc, ssn_iv, created_at, updated_at)
+INSERT INTO employees (empid, fname, lname, employment_type_id, salary, ssn_last4, ssn_hash, ssn_enc, ssn_iv, created_at, updated_at)
 VALUES (
   1,
-  'EMP0001',
   'Alice',
   'Smith',
   1,
@@ -75,8 +95,7 @@ VALUES (
   UNHEX('00'),
   '2025-01-01 00:00:00',
   NULL
-)
-ON DUPLICATE KEY UPDATE employee_number = VALUES(employee_number);
+);
 
 -- Link user to employee for accountability
 INSERT INTO user_employee_link (user_id, empid)

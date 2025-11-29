@@ -15,6 +15,7 @@ USE employeeData;
 CREATE TABLE divisions (
   divid INT AUTO_INCREMENT PRIMARY KEY,
   name VARCHAR(100) NOT NULL,                  -- division name
+  description VARCHAR(255) DEFAULT NULL,
   cityid INT NOT NULL,                         -- FK to cities
   address_line1 VARCHAR(100) NOT NULL,
   address_line2 VARCHAR(100) DEFAULT NULL,
@@ -30,7 +31,8 @@ CREATE TABLE divisions (
 -- Job titles (roles employees can hold)
 CREATE TABLE job_titles (
   job_title_id INT AUTO_INCREMENT PRIMARY KEY,
-  job_title VARCHAR(125) NOT NULL UNIQUE       -- e.g., 'Software Engineer'
+  job_title VARCHAR(125) NOT NULL UNIQUE,      -- e.g., 'Software Engineer'
+  description VARCHAR(255) DEFAULT NULL
 );
 
 -- Employee assignment to divisions (effective-dated)

@@ -14,7 +14,6 @@ USE employeeData;
 CREATE TABLE users (
   user_id INT AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(64) NOT NULL UNIQUE,         -- login name
-  email VARCHAR(128) NOT NULL UNIQUE,           -- contact email
   password_hash VARBINARY(256) NOT NULL,        -- hashed password
   password_salt VARBINARY(64) NOT NULL,         -- per-user salt
   is_active TINYINT(1) NOT NULL DEFAULT 1,      -- active flag
@@ -30,20 +29,10 @@ CREATE TABLE roles (
 );
 
 -- Permissions (granular actions)
-CREATE TABLE permissions (
-  permission_id INT AUTO_INCREMENT PRIMARY KEY,
-  permission_name VARCHAR(64) NOT NULL UNIQUE,  -- e.g., 'UPDATE_EMPLOYEE_DATA', 'UPDATE_EMPLOYEE_SALARY', 'SEE_PAY_STATEMENTS'
-  description VARCHAR(255) DEFAULT NULL
-);
-
--- Mapping of roles to permissions
-CREATE TABLE role_permissions (
-  role_id INT NOT NULL,
-  permission_id INT NOT NULL,
-  PRIMARY KEY (role_id, permission_id),
-  FOREIGN KEY (role_id) REFERENCES roles(role_id) ON DELETE CASCADE,
-  FOREIGN KEY (permission_id) REFERENCES permissions(permission_id) ON DELETE CASCADE
-);
+-- Note: granular 'permissions' table and 'role_permissions' mapping
+-- were removed as part of simplification of the RBAC model.
+-- If fine-grained permissions are required in future, re-introduce
+-- these tables and update role/user assignment logic accordingly.
 
 -- Mapping of users to roles
 CREATE TABLE user_roles (
