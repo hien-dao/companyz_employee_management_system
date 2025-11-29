@@ -1,5 +1,7 @@
 package com.companyz.ems.model;
 
+import java.time.LocalDate;
+
 /**
  * Abstract employee base class containing employment-specific attributes.
  * <p>
@@ -18,14 +20,17 @@ public abstract class Employee extends Person {
     /** Primary contact phone number for the employee. */
     private String phoneNumber;
 
-    /** Current job title for the employee (e.g. "Software Engineer"). */
-    private String jobTitle;
+    /** Current job title for the employee. */
+    private JobTitle jobTitle;
+
+    /** Division (business unit) the employee is assigned to. */
+    private Division division;
 
     /** Employment status label (e.g. "ACTIVE", "ON_LEAVE"). */
     private String employmentStatus;
 
-    /** Hire date as a string (recommended format: yyyy-MM-dd). */
-    private String hireDate;
+    /** Hire date as a {@link java.time.LocalDate}. */
+    private LocalDate hireDate;
 
     /**
      * Returns the employee's numeric identifier.
@@ -84,19 +89,37 @@ public abstract class Employee extends Person {
     /**
      * Returns the employee's job title.
      *
-     * @return job title string or {@code null} if not set
+     * @return {@link JobTitle} instance or {@code null} if not set
      */
-    public String getJobTitle() {
+    public JobTitle getJobTitle() {
         return jobTitle;
     }
 
     /**
      * Sets the employee's job title.
      *
-     * @param jobTitle job title to set
+     * @param jobTitle {@link JobTitle} to set
      */
-    public void setJobTitle(String jobTitle) {
+    public void setJobTitle(JobTitle jobTitle) {
         this.jobTitle = jobTitle;
+    }
+
+    /**
+     * Returns the division the employee is assigned to.
+     *
+     * @return {@link Division} instance or {@code null} if not assigned
+     */
+    public Division getDivision() {
+        return division;
+    }
+
+    /**
+     * Sets the employee's division assignment.
+     *
+     * @param division {@link Division} to assign
+     */
+    public void setDivision(Division division) {
+        this.division = division;
     }
 
     /**
@@ -118,20 +141,20 @@ public abstract class Employee extends Person {
     }
 
     /**
-     * Returns the hire date string.
+     * Returns the hire date as a {@link LocalDate}.
      *
-     * @return hire date (recommended yyyy-MM-dd) or {@code null}
+     * @return hire date, or {@code null} if not set
      */
-    public String getHireDate() {
+    public LocalDate getHireDate() {
         return hireDate;
     }
 
     /**
      * Sets the hire date.
      *
-     * @param hireDate hire date string (recommended format: yyyy-MM-dd)
+     * @param hireDate hire date to set (may be {@code null})
      */
-    public void setHireDate(String hireDate) {
+    public void setHireDate(LocalDate hireDate) {
         this.hireDate = hireDate;
     }
 }
