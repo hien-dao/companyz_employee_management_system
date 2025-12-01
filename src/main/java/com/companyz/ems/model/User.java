@@ -1,74 +1,236 @@
 package com.companyz.ems.model;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * Represents a user account for application access.
  * <p>
- * Each user is associated with an employee and a role that determines
- * permissions and access levels within the system.
+ * Each user is associated with an employee record and one or more roles
+ * that determine permissions and access levels within the system.
+ * Roles are stored in the database and can be expanded without code changes.
  * </p>
  */
 public class User {
     /** Primary key identifier for the user account. */
-    private final int userId;
+    private int userId;
 
     /** Unique login username for the user. */
-    private final String username;
+    private String username;
 
-    /** Hashed password for authentication. */
-    final String passwordHash;
+    /** Hashed password for authentication (stored as varbinary in DB). */
+    private byte[] passwordHash;
 
-    /** Salt used for password hashing. */
-    final String passwordSalt;
+    /** Salt used for password hashing (stored as varbinary in DB). */
+    private byte[] passwordSalt;
 
-    /** Role associated with this user account. */
-    private final Role role;
+    /** Flag indicating whether the account is active. */
+    private boolean active;
 
-    /** Employee record linked to this user account. */
-    private final Employee employee;
+    /** Roles associated with this user account (many-to-many via user_roles). */
+    private List<Role> roles;
+
+    /** Employee record linked to this user account (via user_employee_link). */
+    private Employee employee;
+
+    /** Timestamp when the user account was created. */
+    private LocalDateTime createdAt;
+
+    /** Timestamp when the user account was last updated. */
+    private LocalDateTime updatedAt;
 
     /**
-     * Constructs a new User instance.
-     *
-     * @param userId        unique identifier
-     * @param username      login username
-     * @param passwordHash  hashed password
-     * @param passwordSalt  salt for hashing
-     * @param role          associated role
-     * @param employee      linked employee
+     * Constructs an empty User with default values.
      */
-    public User (int userId, String username, String passwordHash, String passwordSalt, Role role, Employee employee) {
+    public User() {
+    }
+
+    /**
+     * Constructs a User with all specified values.
+     *
+     * @param userId the primary key identifier
+     * @param username the login username
+     * @param passwordHash the hashed password bytes
+     * @param passwordSalt the salt bytes for password hashing
+     * @param active whether the account is active
+     * @param roles list of roles assigned to this user
+     * @param employee the associated employee record
+     * @param createdAt when the account was created
+     * @param updatedAt when the account was last updated
+     */
+    public User(int userId, String username, byte[] passwordHash, byte[] passwordSalt,
+                boolean active, List<Role> roles, Employee employee,
+                LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.userId = userId;
         this.username = username;
         this.passwordHash = passwordHash;
         this.passwordSalt = passwordSalt;
-        this.role = role;
+        this.active = active;
+        this.roles = roles;
         this.employee = employee;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    /**
+     * Returns the user identifier.
+     *
+     * @return the user id
+     */
+    public int getUserId() {
+        return userId;
+    }
+
+    /**
+     * Sets the user identifier.
+     *
+     * @param userId the id to set
+     */
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
     /**
      * Returns the username.
      *
-     * @return username or {@code null}
+     * @return the username or {@code null} if not set
      */
     public String getUsername() {
         return username;
     }
 
     /**
-     * Returns the user's role.
+     * Sets the username.
      *
-     * @return {@link Role} or {@code null}
+     * @param username the username to set
      */
-    public Role getRole() {
-        return role;
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    /**
+     * Returns the hashed password.
+     *
+     * @return the password hash bytes or {@code null} if not set
+     */
+    public byte[] getPasswordHash() {
+        return passwordHash;
+    }
+
+    /**
+     * Sets the hashed password.
+     *
+     * @param passwordHash the password hash bytes to set
+     */
+    public void setPasswordHash(byte[] passwordHash) {
+        this.passwordHash = passwordHash;
+    }
+
+    /**
+     * Returns the password salt.
+     *
+     * @return the salt bytes or {@code null} if not set
+     */
+    public byte[] getPasswordSalt() {
+        return passwordSalt;
+    }
+
+    /**
+     * Sets the password salt.
+     *
+     * @param passwordSalt the salt bytes to set
+     */
+    public void setPasswordSalt(byte[] passwordSalt) {
+        this.passwordSalt = passwordSalt;
+    }
+
+    /**
+     * Returns whether the user account is active.
+     *
+     * @return {@code true} if active, {@code false} if inactive
+     */
+    public boolean isActive() {
+        return active;
+    }
+
+    /**
+     * Sets whether the user account is active.
+     *
+     * @param active {@code true} to activate, {@code false} to deactivate
+     */
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    /**
+     * Returns the list of roles assigned to this user.
+     *
+     * @return list of {@link Role} objects or {@code null} if not set
+     */
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    /**
+     * Sets the list of roles for this user.
+     *
+     * @param roles list of {@link Role} objects to assign
+     */
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 
     /**
      * Returns the employee associated with this user.
      *
-     * @return {@link Employee} or {@code null}
+     * @return the {@link Employee} object or {@code null} if not linked
      */
     public Employee getEmployee() {
         return employee;
+    }
+
+    /**
+     * Sets the employee associated with this user.
+     *
+     * @param employee the {@link Employee} object to link
+     */
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
+
+    /**
+     * Returns the account creation timestamp.
+     *
+     * @return the creation date/time or {@code null} if not set
+     */
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    /**
+     * Sets the account creation timestamp.
+     *
+     * @param createdAt the creation date/time to set
+     */
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    /**
+     * Returns the account last-update timestamp.
+     *
+     * @return the update date/time or {@code null} if not set
+     */
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    /**
+     * Sets the account last-update timestamp.
+     *
+     * @param updatedAt the update date/time to set
+     */
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
