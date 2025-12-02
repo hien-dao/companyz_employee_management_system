@@ -35,7 +35,6 @@ CREATE TABLE cities (
 
 CREATE TABLE employment_types (
   employment_type_id INT AUTO_INCREMENT PRIMARY KEY,
-  employment_type_name VARCHAR(64) NOT NULL UNIQUE, -- 'FULL_TIME','PART_TIME','CONTRACTOR', 'INTERN'
-  is_active TINYINT(1) NOT NULL DEFAULT 1           -- flag to deactivate types without deleting
+  employment_type_name VARCHAR(64) NOT NULL UNIQUE -- 'FULL_TIME','PART_TIME','CONTRACTOR', 'INTERN'
 );
 

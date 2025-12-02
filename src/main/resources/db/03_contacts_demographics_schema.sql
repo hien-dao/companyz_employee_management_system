@@ -32,7 +32,15 @@ CREATE TABLE employee_demographic (
   gender VARCHAR(50) DEFAULT NULL,
   race VARCHAR(50) DEFAULT NULL,
   dob DATE NOT NULL,                           -- required for reporting
-  FOREIGN KEY (empid) REFERENCES employees(empid) ON DELETE CASCADE
+  address_line1 VARCHAR(255) DEFAULT NULL,     -- street address
+  address_line2 VARCHAR(255) DEFAULT NULL,     -- apartment, suite, etc.
+  city_id INT DEFAULT NULL,                    -- FK to cities
+  state_id INT DEFAULT NULL,                   -- FK to states
+  country_id INT DEFAULT NULL,                 -- FK to countries
+  FOREIGN KEY (empid) REFERENCES employees(empid) ON DELETE CASCADE,
+  FOREIGN KEY (city_id) REFERENCES cities(cityid) ON DELETE SET NULL,
+  FOREIGN KEY (state_id) REFERENCES states(stateid) ON DELETE SET NULL,
+  FOREIGN KEY (country_id) REFERENCES countries(countryid) ON DELETE SET NULL
 );
 
 -- Helpful indexes
