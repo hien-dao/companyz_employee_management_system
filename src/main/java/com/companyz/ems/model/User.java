@@ -3,6 +3,8 @@ package com.companyz.ems.model;
 import java.time.LocalDateTime;
 import java.util.List;
 
+// Employee link is stored by id (empId) to avoid embedding employee objects
+
 /**
  * Represents a user account for application access.
  * <p>
@@ -30,8 +32,8 @@ public class User {
     /** Roles associated with this user account (many-to-many via user_roles). */
     private List<Role> roles;
 
-    /** Employee record linked to this user account (via user_employee_link). */
-    private Employee employee;
+    /** Employee id linked to this user account (via user_employee_link). */
+    private Integer empId;
 
     /** Timestamp when the user account was created. */
     private LocalDateTime createdAt;
@@ -53,21 +55,21 @@ public class User {
      * @param passwordHash the hashed password bytes
      * @param passwordSalt the salt bytes for password hashing
      * @param active whether the account is active
-     * @param roles list of roles assigned to this user
-     * @param employee the associated employee record
+         * @param roles list of roles assigned to this user
+         * @param empId the associated employee id (or {@code null})
      * @param createdAt when the account was created
      * @param updatedAt when the account was last updated
      */
-    public User(int userId, String username, byte[] passwordHash, byte[] passwordSalt,
-                boolean active, List<Role> roles, Employee employee,
-                LocalDateTime createdAt, LocalDateTime updatedAt) {
+        public User(int userId, String username, byte[] passwordHash, byte[] passwordSalt,
+            boolean active, List<Role> roles, Integer empId,
+            LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.userId = userId;
         this.username = username;
         this.passwordHash = passwordHash;
         this.passwordSalt = passwordSalt;
         this.active = active;
         this.roles = roles;
-        this.employee = employee;
+        this.empId = empId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -183,19 +185,19 @@ public class User {
     /**
      * Returns the employee associated with this user.
      *
-     * @return the {@link Employee} object or {@code null} if not linked
+     * @return the employee id or {@code null} if not linked
      */
-    public Employee getEmployee() {
-        return employee;
+    public Integer getEmpId() {
+        return empId;
     }
 
     /**
-     * Sets the employee associated with this user.
+     * Sets the employee id associated with this user.
      *
-     * @param employee the {@link Employee} object to link
+     * @param empId the employee id to link
      */
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
+    public void setEmpId(Integer empId) {
+        this.empId = empId;
     }
 
     /**
