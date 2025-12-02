@@ -14,7 +14,7 @@ public class Payroll {
     private int payrollId;
 
     /** Employee this payroll entry belongs to. */
-    private Employee employee;
+    private int empId;
 
     /** Actual pay date for this payroll entry. */
     private LocalDate payDate;
@@ -62,21 +62,21 @@ public class Payroll {
     }
 
     /**
-     * Returns the employee for this payroll entry.
+     * Returns the employee ID for this payroll entry.
      *
-     * @return {@link Employee} or {@code null}
+     * @return employee id
      */
-    public Employee getEmployee() {
-        return employee;
+    public int getEmpId() {
+        return empId;
     }
 
     /**
-     * Sets the employee for this payroll entry.
+     * Sets the employee ID for this payroll entry.
      *
-     * @param employee employee to set
+     * @param empId employee id to set
      */
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
+    public void setEmpId(int empId) {
+        this.empId = empId;
     }
 
     /**
