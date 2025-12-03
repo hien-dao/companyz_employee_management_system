@@ -9,7 +9,7 @@ public interface EmploymentStatusDao {
     Optional<EmploymentStatus> findById(int statusId);
     Optional<EmploymentStatus> findByName(String statusName);
     List<EmploymentStatus> findAll();
-    boolean createStatus(EmploymentStatus status);
-    boolean updateStatus(EmploymentStatus status);
+    EmploymentStatus createStatus(EmploymentStatus status);
+    EmploymentStatus updateStatus(EmploymentStatus status);
     boolean deleteStatus(int statusId);
 }

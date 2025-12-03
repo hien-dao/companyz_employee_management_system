@@ -53,6 +53,25 @@ public class RoleDaoImpl extends AbstractDao implements RoleDao {
     }
 
     @Override
+    public Optional<Role> findByName(String roleName) {
+        String sql = "SELECT role_id, role_name, description FROM roles WHERE role_name = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = prepareStatement(conn, sql, roleName);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return Optional.of(new Role(
+                    rs.getInt("role_id"),
+                    rs.getString("role_name"),
+                    rs.getString("description")
+                ));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public boolean createRole(Role role) {
         String sql = "INSERT INTO roles (role_name, description) VALUES (?, ?)";
         try (Connection conn = getConnection();

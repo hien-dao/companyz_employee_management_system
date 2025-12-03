@@ -7,8 +7,9 @@ import com.companyz.ems.model.employee.JobTitle;
 
 public interface JobTitleDao {
     Optional<JobTitle> findById(int jobTitleId);
+    Optional<JobTitle> findByName(String jobTitleName);
     List<JobTitle> findAll();
-    boolean createJobTitle(JobTitle jobTitle);
-    boolean updateJobTitle(JobTitle jobTitle);
+    JobTitle createJobTitle(JobTitle jobTitle);
+    JobTitle updateJobTitle(JobTitle jobTitle);
     boolean deleteJobTitle(int jobTitleId);
 }

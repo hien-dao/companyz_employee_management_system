@@ -35,6 +35,23 @@ public class DivisionDaoImpl extends AbstractDao implements DivisionDao {
     }
 
     @Override
+    public Optional<Division> findByName(String divisionName) {
+        String sql = "SELECT division_id, division_name, description, is_active, " +
+                     "address_line1, address_line2, city, state, country, postal_code " +
+                     "FROM divisions WHERE division_name = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = prepareStatement(conn, sql, divisionName);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return Optional.of(mapDivision(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // replace with logger
+        }
+        return Optional.empty();
+    }
+
+    @Override
     public List<Division> findAll() {
         List<Division> divisions = new ArrayList<>();
         String sql = "SELECT division_id, division_name, description, is_active, " +
@@ -53,7 +70,7 @@ public class DivisionDaoImpl extends AbstractDao implements DivisionDao {
     }
 
     @Override
-    public boolean createDivision(Division division) {
+    public Division createDivision(Division division) {
         String sql = "INSERT INTO divisions (division_name, description, is_active, " +
                      "address_line1, address_line2, city, state, country, postal_code) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -70,16 +87,22 @@ public class DivisionDaoImpl extends AbstractDao implements DivisionDao {
             stmt.setString(7, addr != null ? addr.getState() : null);
             stmt.setString(8, addr != null ? addr.getCountry() : null);
             stmt.setString(9, addr != null ? addr.getPostalCode() : null);
+            stmt.executeUpdate();
 
-            return stmt.executeUpdate() > 0;
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    division.setDivisionId(generatedKeys.getInt(1));
+                }
+            }
+            return division;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 
     @Override
-    public boolean updateDivision(Division division) {
+    public Division updateDivision(Division division) {
         String sql = "UPDATE divisions SET division_name = ?, description = ?, is_active = ?, " +
                      "address_line1 = ?, address_line2 = ?, city = ?, state = ?, country = ?, postal_code = ? " +
                      "WHERE division_id = ?";
@@ -99,10 +122,11 @@ public class DivisionDaoImpl extends AbstractDao implements DivisionDao {
 
             stmt.setInt(10, division.getDivisionId());
 
-            return stmt.executeUpdate() > 0;
+            stmt.executeUpdate();
+            return division;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 

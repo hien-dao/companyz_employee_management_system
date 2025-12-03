@@ -7,8 +7,9 @@ import com.companyz.ems.model.Division;
 
 public interface DivisionDao {
     Optional<Division> findById(int divisionId);
+    Optional<Division> findByName(String divisionName);
     List<Division> findAll();
-    boolean createDivision(Division division);
-    boolean updateDivision(Division division);
+    Division createDivision(Division division);
+    Division updateDivision(Division division);
     boolean deleteDivision(int divisionId);
 }

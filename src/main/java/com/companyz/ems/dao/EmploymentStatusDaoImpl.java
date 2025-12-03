@@ -60,7 +60,7 @@ public class EmploymentStatusDaoImpl extends AbstractDao implements EmploymentSt
     }
 
     @Override
-    public boolean createStatus(EmploymentStatus status) {
+    public EmploymentStatus createStatus(EmploymentStatus status) {
         String sql = "INSERT INTO employee_status (status_name, description, effective_start, effective_end) VALUES (?, ?, ?, ?)";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -68,15 +68,22 @@ public class EmploymentStatusDaoImpl extends AbstractDao implements EmploymentSt
             stmt.setString(2, status.getDescription());
             stmt.setDate(3, status.getEffectiveStart() != null ? Date.valueOf(status.getEffectiveStart()) : null);
             stmt.setDate(4, status.getEffectiveEnd() != null ? Date.valueOf(status.getEffectiveEnd()) : null);
-            return stmt.executeUpdate() > 0;
+            stmt.executeUpdate();
+
+            try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    status.setStatusId(generatedKeys.getInt(1));
+                }
+            }
+            return status;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 
     @Override
-    public boolean updateStatus(EmploymentStatus status) {
+    public EmploymentStatus updateStatus(EmploymentStatus status) {
         String sql = "UPDATE employee_status SET status_name = ?, description = ?, effective_start = ?, effective_end = ? WHERE status_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -85,10 +92,11 @@ public class EmploymentStatusDaoImpl extends AbstractDao implements EmploymentSt
             stmt.setDate(3, status.getEffectiveStart() != null ? Date.valueOf(status.getEffectiveStart()) : null);
             stmt.setDate(4, status.getEffectiveEnd() != null ? Date.valueOf(status.getEffectiveEnd()) : null);
             stmt.setInt(5, status.getStatusId());
-            return stmt.executeUpdate() > 0;
+            stmt.executeUpdate();
+            return status;
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return null;
         }
     }
 
