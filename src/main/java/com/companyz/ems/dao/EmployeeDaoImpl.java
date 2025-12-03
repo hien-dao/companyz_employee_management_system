@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import java.util.Optional;
 import com.companyz.ems.model.Contact;
 import com.companyz.ems.model.employee.BaseEmployee;
 import com.companyz.ems.model.employee.FullTimeEmployee;
+import com.companyz.ems.model.report.EmployeeHireReport;
 
 /**
  * JDBC implementation of EmployeeDao.
@@ -164,6 +166,41 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
             logError(e);
             return false;
         }
+    }
+
+    @Override
+    public EmployeeHireReport getEmployeeHireByDateRange(LocalDate startDate, LocalDate endDate) {
+        List<EmployeeHireReport.HireEntry> hires = new ArrayList<>();
+        String sql = "SELECT e.empid, e.fname, e.lname, d.name AS division_name, j.job_title AS job_title_name, s.hire_date " +
+                     "FROM employees e " +
+                     "JOIN employee_status s ON e.empid = s.empid " +
+                     "JOIN employee_division ed ON e.empid = ed.empid " +
+                     "JOIN divisions d ON ed.divid = d.divid " +
+                     "JOIN employee_job_title ej ON e.empid = ej.empid " +
+                     "JOIN job_titles j ON ej.job_title_id = j.job_title_id " +
+                     "WHERE s.hire_date BETWEEN ? AND ? " +
+                     "ORDER BY s.hire_date ASC";
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, Date.valueOf(startDate));
+            stmt.setDate(2, Date.valueOf(endDate));
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    hires.add(new EmployeeHireReport.HireEntry(
+                        rs.getInt("empid"),
+                        rs.getString("fname"),
+                        rs.getString("lname"),
+                        rs.getString("division_name"),
+                        rs.getString("job_title_name"),
+                        rs.getDate("hire_date").toLocalDate()
+                    ));
+                }
+            }
+        } catch (SQLException e) {
+            logError(e);
+        }
+        return new EmployeeHireReport(startDate, endDate, hires);
     }
 
     /**
