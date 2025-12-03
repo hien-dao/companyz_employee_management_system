@@ -1,20 +1,23 @@
 package com.companyz.ems.dao;
 
-import com.companyz.ems.model.User;
-import com.companyz.ems.model.Role;
-import com.companyz.ems.model.Employee;
-
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import com.companyz.ems.model.Role;
+import com.companyz.ems.model.User;
+
 
 public class UserDaoImpl extends AbstractDao implements UserDao {
 
     @Override
     public Optional<User> findById(int userId) {
-        String sql = "SELECT user_id, username, password_hash, password_salt, is_active, created_at, updated_at " +
-                     "FROM users WHERE user_id = ?";
+        String sql = "SELECT * FROM users WHERE user_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = prepareStatement(conn, sql, userId);
              ResultSet rs = stmt.executeQuery()) {
@@ -31,8 +34,7 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
 
     @Override
     public Optional<User> findByUsername(String username) {
-        String sql = "SELECT user_id, username, password_hash, password_salt, is_active, created_at, updated_at " +
-                     "FROM users WHERE username = ?";
+        String sql = "SELECT * FROM users WHERE username = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = prepareStatement(conn, sql, username);
              ResultSet rs = stmt.executeQuery()) {
@@ -153,21 +155,41 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
         // Attach roles
         user.setRoles(getUserRoles(userId));
 
-        // Attach employee link
-        String empSql = "SELECT e.empid, e.fname, e.lname, e.salary " +
+        // Attach employee link (store employee id)
+        String empSql = "SELECT e.empid, e.email, e.phone_number, e.salary " +
                         "FROM employees e JOIN user_employee_link uel ON e.empid = uel.empid " +
                         "WHERE uel.user_id = ?";
         try (PreparedStatement empStmt = prepareStatement(conn, empSql, userId);
              ResultSet empRs = empStmt.executeQuery()) {
             if (empRs.next()) {
-                Employee emp = new Employee();
-                emp.setEmpId(empRs.getInt("empid"));
-                emp.setFname(empRs.getString("fname"));
-                emp.setLname(empRs.getString("lname"));
-                emp.setSalary(empRs.getBigDecimal("salary"));
-                user.setEmployee(emp);
+                user.setEmpId(empRs.getInt("empid"));
             }
         }
         return user;
     }
+
+    @Override
+    public boolean addRoleToUser(int userId, int roleId) {
+        String sql = "INSERT INTO user_roles (user_id, role_id) VALUES (?, ?)";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = prepareStatement(conn, sql, userId, roleId)) {
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean removeRoleFromUser(int userId, int roleId) {
+        String sql = "DELETE FROM user_roles WHERE user_id = ? AND role_id = ?";
+        try (Connection conn = getConnection();
+            PreparedStatement stmt = prepareStatement(conn, sql, userId, roleId)) {
+            return stmt.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
 }

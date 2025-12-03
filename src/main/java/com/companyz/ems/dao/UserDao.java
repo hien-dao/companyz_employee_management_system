@@ -1,10 +1,10 @@
 package com.companyz.ems.dao;
 
+import com.companyz.ems.model.User;
+import com.companyz.ems.model.Role;
+
 import java.util.List;
 import java.util.Optional;
-
-import com.companyz.ems.model.Role;
-import com.companyz.ems.model.User;
 
 public interface UserDao {
     Optional<User> findById(int userId);
@@ -13,4 +13,6 @@ public interface UserDao {
     boolean updatePassword(int userId, byte[] newHash, byte[] newSalt);
     boolean deactivateUser(int userId);
     List<Role> getUserRoles(int userId);
+    boolean addRoleToUser(int userId, int roleId);
+    boolean removeRoleFromUser(int userId, int roleId);
 }
