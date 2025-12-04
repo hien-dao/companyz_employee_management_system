@@ -1,0 +1,82 @@
+UI Layer (JavaFX Controllers)
+ ├── EmployeeController
+ │    └── calls EmployeeService
+ ├── PayrollController
+ │    └── calls PayrollService
+ ├── ReportController
+ │    └── calls ReportService
+ └── UserController
+      └── calls UserService
+       
+Service Layer (Business Logic)
+ ├── EmployeeService
+ │    └── uses EmployeeDao, DivisionDao, JobTitleDao, EmploymentStatusDao
+ ├── PayrollService
+ │    └── uses PayrollDao
+ ├── ReportService
+ │    ├── getEmployeePayrollReport(empId)
+ │    │    └── PayrollDao.getPayrollsByEmployee(empId)
+ │    │         └── returns List<Payroll>
+ │    │         └── builds EmployeePayrollReport DTO
+ │    │
+ │    ├── getDivisionMonthlyReport(divisionId, month)
+ │    │    └── PayrollDao.getTotalPayByDivision(divisionId, month)
+ │    │         └── returns double totalPay
+ │    │         └── builds DivisionMonthlyPayReport DTO
+ │    │
+ │    └── getJobTitleMonthlyReport(jobTitleId, month)
+ │    |    └── PayrollDao.getTotalPayByJobTitle(jobTitleId, month)
+ │    |         └── returns double totalPay
+ │    |         └── builds JobTitleMonthlyPayReport DTO
+ │    └── getEmployeeHireReport(startDate, endDate)
+ └── UserService
+      ├── authenticateUser(username, password)
+      │    └── UserDao.findByUsername(username)
+      │         └── returns Optional<User>
+      ├── assignRoles(userId, roles)
+      │    └── RoleDao
+      └── deactivateUser(userId)
+           └── UserDao.deactivateUser(userId)
+
+DAO Layer (Persistence)
+ ├── EmployeeDao
+ │    └── CRUD for Employee
+ │    └── getEmployeeHireByDateRange
+ ├── DivisionDao
+ │    └── fetch Division info
+ ├── JobTitleDao
+ │    └── fetch JobTitle info
+ ├── EmploymentStatusDao
+ │    └── fetch/update EmploymentStatus
+ ├── PayrollDao
+ │    ├── getPayrollsByEmployee(empId)
+ │    ├── getTotalPayByDivision(divisionId, month)
+ │    └── getTotalPayByJobTitle(jobTitleId, month)
+ ├── UserDao
+ │    ├── findById(userId)
+ │    ├── findByUsername(username)
+ │    ├── createUser(User, empId, roles)
+ │    ├── updatePassword(userId, hash, salt)
+ │    └── deactivateUser(userId)
+ └── RoleDao
+      ├── findAll()
+      ├── findById(roleId)
+      └── CRUD for Role
+
+Model Layer
+ ├── Person (abstract)
+ ├── BaseEmployee (abstract)
+ │    └── FullTimeEmployee (concrete)
+ │         └── has Division, JobTitle, EmploymentStatus in String
+ ├── Division
+ ├── JobTitle
+ ├── EmploymentStatus
+ ├── User
+ │    └── has Employee id, List<Role>
+ ├── Role
+ ├── Payroll
+ └── report/
+      ├── EmployeePayrollReport
+      ├── DivisionMonthlyPayReport
+      └── JobTitleMonthlyPayReport
+      └── EmployeeHireReport

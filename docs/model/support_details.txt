@@ -1,0 +1,77 @@
++-----------------------------------+
+|             Contact               |
++-----------------------------------+
+| - contactId: int                  |
+| - contactType: String             |
+| - contactValue: String            |
+| - isPrimary: Boolean              |
++-----------------------------------+
+| + getters/setters                 |
++-----------------------------------+
+
+
++-----------------------------------+
+|             Address               |
++-----------------------------------+
+| - addressLine1: String            |
+| - addressLine2: String            |
+| - city: String                    |
+| - state: String                   |
+| - country: String                  |
+| - postalCode: String              |
++-----------------------------------+
+| + getters/setters                 |
++-----------------------------------+
+
+
++-----------------------------------+
+|        EmploymentStatus           |
++-----------------------------------+
+| - statusId: int                   |
+| - statusName: String              |
+| - description: String             |
+| - effectiveStart: LocalDate       |
+| - effectiveEnd: LocalDate         |
++-----------------------------------+
+| + getters/setters                 |
++-----------------------------------+
+
+
++-----------------------------------+
+|             Payroll               |
++-----------------------------------+
+| - payrollId: int                  |
+| - empId: int                      |
+| - payDate: LocalDate              |
+| - earnings: double                |
+| - fedTax: double                  |
+| - fedMed: double                  |
+| - fedSs: double                   |
+| - stateTax: double                |
+| - retire401k: double              |
+| - healthCare: double              |
+| - netPay: double                  |
++-----------------------------------+
+| + getPayrollId(): int             |
+| + setPayrollId(id:int)            |
+| + getEmpId(): int                 |
+| + setEmpId(empId:int)             |
+| + getPayDate(): LocalDate         |
+| + setPayDate(date:LocalDate)      |
+| + getEarnings(): double           |
+| + setEarnings(earnings:double)    |
+| + getFedTax(): double             |
+| + setFedTax(fedTax:double)        |
+| + getFedMed(): double             |
+| + setFedMed(fedMed:double)        |
+| + getFedSs(): double              |
+| + setFedSs(fedSs:double)          |
+| + getStateTax(): double           |
+| + setStateTax(stateTax:double)    |
+| + getRetire401k(): double         |
+| + setRetire401k(retire401k:double)|
+| + getHealthCare(): double         |
+| + setHealthCare(healthCare:double)|
+| + getNetPay(): double             |
+| + setNetPay(netPay:double)        |
++-----------------------------------+

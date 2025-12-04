@@ -1,0 +1,98 @@
++-----------------------------------+
+|          <<abstract>>             |
+|             Person                |
++-----------------------------------+
+| - firstName: String               |
+| - lastName: String                |
+| - gender: String                  |
+| - race: String                    |
+| - dob: LocalDate                  |
+| - ssnLast4: String                |
+| - ssnHash: String                 |
+| - ssnEnc: byte[]                  |
+| - ssnIv: byte[]                   |
++-----------------------------------+
+| + getters/setters for all fields  |
++-----------------------------------+
+
+
++-----------------------------------+
+|           <<interface>>            |
+|             Employee               |
++-----------------------------------+
+| + getEmpId(): int                 |
+| + getFirstName(): String          |
+| + getLastName(): String           |
+| + getGender(): String             |
+| + getRace(): String               |
+| + getDob(): LocalDate             |
+| + getSsnLast4(): String           |
+| + getPrimaryEmail(): String       |
+| + getPrimaryPhoneNumber(): String |
+| + getAddressLine1(): String       |
+| + getAddressLine2(): String       |
+| + getCity(): String               |
+| + getState(): String              |
+| + getCountry(): String            |
+| + getZipCode(): String            |
+| + getEmploymentTypeString(): String|
+| + getEmploymentStatusString(): String|
+| + getJobTitleString(): String     |
+| + getDivisionString(): String     |
+| + getSalary(): double             |
+| + getHireDate(): LocalDate        |
+| + getCreatedAt(): LocalDateTime   |
+| + getUpdatedAt(): LocalDateTime   |
++-----------------------------------+
+
+
++-----------------------------------+
+|          <<abstract>>             |
+|          BaseEmployee             |
+| extends Person                    |
++-----------------------------------+
+| - empId: int                      |
+| - contacts: List<Contact>         |
+| - address: Address                |
+| - jobTitleId: int                 |
+| - employmentStatusId: int         |
+| - employeeTypeId: int             |
+| - divisionId: int                 |
+| - hireDate: LocalDate             |
+| - createdAt: LocalDateTime        |
+| - updatedAt: LocalDateTime        |
++-----------------------------------+
+| + getters/setters for all fields  |
++-----------------------------------+
+
+
++-----------------------------------+
+|          FullTimeEmployee         |
+| extends BaseEmployee              |
+| implements Employee               |
++-----------------------------------+
+| - employmentTypeString: String    |
+| - employmentStatusString: String  |
+| - jobTitleString: String          |
+| - divisionNameString: String      |
+| - annualSalary: double            |
++-----------------------------------+
+| + getEmploymentTypeString(): String|
+| + setEmploymentTypeString(String) |
+| + getEmploymentStatusString(): String|
+| + setEmploymentStatusString(String)|
+| + getJobTitleString(): String     |
+| + setJobTitleString(String)       |
+| + getDivisionString(): String     |
+| + setDivisionString(String)       |
+| + getSalary(): double             |
+| + setSalary(double)               |
+| + getPrimaryEmail(): String       |
+| + getPrimaryPhoneNumber(): String |
+| + getAddressLine1(): String       |
+| + getAddressLine2(): String       |
+| + getCity(): String               |
+| + getState(): String              |
+| + getCountry(): String            |
+| + getZipCode(): String            |
++-----------------------------------+

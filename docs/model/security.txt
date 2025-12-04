@@ -1,0 +1,57 @@
++-----------------------------------+
+|              User                 |
++-----------------------------------+
+| - userId: int                     |
+| - username: String                |
+| - passwordHash: byte[]            |
+| - passwordSalt: byte[]            |
+| - active: boolean                 |
+| - roles: List<Role>               |
+| - empId: Integer                  |
+| - createdAt: LocalDateTime        |
+| - updatedAt: LocalDateTime        |
++-----------------------------------+
+| + User()                          |
+| + User(userId:int, username:String,
+|        passwordHash:byte[], passwordSalt:byte[],
+|        active:boolean, roles:List<Role>,
+|        empId:Integer, createdAt:LocalDateTime,
+|        updatedAt:LocalDateTime)   |
+| + getUserId(): int                |
+| + setUserId(userId:int)           |
+| + getUsername(): String           |
+| + setUsername(username:String)    |
+| + getPasswordHash(): byte[]       |
+| + setPasswordHash(passwordHash:byte[]) |
+| + getPasswordSalt(): byte[]       |
+| + setPasswordSalt(passwordSalt:byte[]) |
+| + isActive(): boolean             |
+| + setActive(active:boolean)       |
+| + getRoles(): List<Role>          |
+| + setRoles(roles:List<Role>)      |
+| + getEmpId(): Integer             |
+| + setEmpId(empId:Integer)         |
+| + getCreatedAt(): LocalDateTime   |
+| + setCreatedAt(createdAt:LocalDateTime) |
+| + getUpdatedAt(): LocalDateTime   |
+| + setUpdatedAt(updatedAt:LocalDateTime) |
++-----------------------------------+
+
+
++-----------------------------------+
+|              Role                 |
++-----------------------------------+
+| - roleId: int                     |
+| - roleName: String                |
+| - description: String             |
++-----------------------------------+
+| + Role()                          |
+| + Role(roleId:int, roleName:String,
+|        description:String)         |
+| + getRoleId(): int                |
+| + setRoleId(roleId:int)           |
+| + getRoleName(): String           |
+| + setRoleName(roleName:String)    |
+| + getDescription(): String        |
+| + setDescription(description:String) |
++-----------------------------------+

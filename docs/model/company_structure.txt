@@ -1,0 +1,31 @@
++-----------------------------------+
+|            Division               |
++-----------------------------------+
+| - divisionId: int                 |
+| - divisionName: String            |
+| - description: String             |
+| - address: Address                |
+| - isActive: Boolean               |
++-----------------------------------+
+| + getDivisionId(): int            |
+| + setDivisionId(divisionId:int)   |
+| + getDivisionName(): String       |
+| + setDivisionName(name:String)    |
+| + getDescription(): String        |
+| + setDescription(desc:String)     |
+| + getAddress(): Address           |
+| + setAddress(address:Address)     |
+| + getIsActive(): Boolean          |
+| + setIsActive(isActive:Boolean)   |
++-----------------------------------+
+
+
++-----------------------------------+
+|             JobTitle              |
++-----------------------------------+
+| - jobTitleId: int                 |
+| - titleName: String               |
+| - description: String             |
++-----------------------------------+
+| + getters/setters                 |
++-----------------------------------+
