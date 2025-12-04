@@ -32,6 +32,9 @@ public abstract class BaseEmployee extends Person {
     /** Employment status id of the employee. */
     private int employmentStatusId;
 
+    /** Employee type id (full-time, part-time, contractor, etc.). */
+    private int employeeTypeId;
+
     /** Division (business unit) id the employee is assigned to. */
     private int divisionId;
 
@@ -132,6 +135,24 @@ public abstract class BaseEmployee extends Person {
      */
     public void setEmploymentStatusId(int employmentStatusId) {
         this.employmentStatusId = employmentStatusId;
+    }
+
+    /**
+     * Returns the employee type id (full-time, part-time, contractor, etc.).
+     *
+     * @return employee type id
+     */
+    public int getEmployeeTypeId() {
+        return employeeTypeId;
+    }
+
+    /**
+     * Sets the employee type id (full-time, part-time, contractor, etc.).
+     *
+     * @param employeeTypeId the employee type id to set
+     */
+    public void setEmployeeTypeId(int employeeTypeId) {
+        this.employeeTypeId = employeeTypeId;
     }
 
     /**

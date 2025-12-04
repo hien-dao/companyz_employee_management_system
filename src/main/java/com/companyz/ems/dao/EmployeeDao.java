@@ -18,9 +18,6 @@ public interface EmployeeDao {
 
     List<BaseEmployee> findByDob(LocalDate dob);
     List<BaseEmployee> findAll();
-    List<BaseEmployee> findByDivision(int divisionId);
-    List<BaseEmployee> findByJobTitle(int jobTitleId);
-    List<BaseEmployee> finByEmploymentStatus(int employmentStatusId);
 
     BaseEmployee createEmployee(BaseEmployee employee);   // return created entity with generated ID
     BaseEmployee updateEmployee(BaseEmployee employee);   // return updated entity
