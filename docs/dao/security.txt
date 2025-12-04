@@ -1,0 +1,25 @@
++-----------------------------------+
+|          <<interface>>            |
+|             RoleDao               |
++-----------------------------------+
+| + findById(roleId:int): Optional<Role> |
+| + findByName(name:String): Optional<Role> |
+| + findAll(): List<Role>                  |
+| + createRole(role:Role): boolean         |
+| + updateRole(role:Role): boolean         |
+| + deleteRole(roleId:int): boolean        |
++-----------------------------------+
+
++-----------------------------------+
+|          <<interface>>            |
+|             UserDao               |
++-----------------------------------+
+| + findById(userId:int): Optional<User>       |
+| + findByUsername(username:String): Optional<User> |
+| + createUser(user:User, empId:int, roles:List<Role>): boolean |
+| + updatePassword(userId:int, newHash:byte[], newSalt:byte[]): boolean |
+| + deactivateUser(userId:int): boolean        |
+| + getUserRoles(userId:int): List<Role>       |
+| + addRoleToUser(userId:int, roleId:int): boolean |
+| + removeRoleFromUser(userId:int, roleId:int): boolean |
++-----------------------------------+

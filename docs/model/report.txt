@@ -1,0 +1,85 @@
++-----------------------------------+
+|     DivisionMonthlyPayReport      |
++-----------------------------------+
+| - divisionId: int                 |
+| - divisionName: String            |
+| - month: int                      |
+| - year: int                       |
+| - totalPay: double                |
++-----------------------------------+
+| + DivisionMonthlyPayReport(...)   |
+| + getDivisionId(): int            |
+| + getDivisionName(): String       |
+| + getMonth(): int                 |
+| + getYear(): int                  |
+| + getTotalPay(): double           |
++-----------------------------------+
+
++-----------------------------------+
+|        EmployeeHireReport         |
++-----------------------------------+
+| - startDate: LocalDate            |
+| - endDate: LocalDate              |
+| - hires: List<HireEntry>          |
++-----------------------------------+
+| + EmployeeHireReport(...)         |
+| + getStartDate(): LocalDate       |
+| + getEndDate(): LocalDate         |
+| + getHires(): List<HireEntry>     |
++-----------------------------------+
+
++-----------------------------------+
+|   EmployeeHireReport.HireEntry    |
+|   <<static nested class>>         |
++-----------------------------------+
+| - empId: int                      |
+| - firstName: String               |
+| - lastName: String                |
+| - divisionName: String            |
+| - jobTitleName: String            |
+| - hireDate: LocalDate             |
++-----------------------------------+
+| + HireEntry(...)                  |
+| + getEmpId(): int                 |
+| + getFirstName(): String          |
+| + getLastName(): String           |
+| + getDivisionName(): String       |
+| + getJobTitleName(): String       |
+| + getHireDate(): LocalDate        |
++-----------------------------------+
+
++-----------------------------------+
+|      EmployeePayrollReport        |
++-----------------------------------+
+| - empId: int                      |
+| - firstName: String               |
+| - lastName: String                |
+| - divisionName: String            |
+| - jobTitleName: String            |
+| - payrolls: List<Payroll>         |
++-----------------------------------+
+| + EmployeePayrollReport(...)      |
+| + getEmpId(): int                 |
+| + getFirstName(): String          |
+| + getLastName(): String           |
+| + getDivisionName(): String       |
+| + getJobTitleName(): String       |
+| + getPayrolls(): List<Payroll>    |
++-----------------------------------+
+
++-----------------------------------+
+|     JobTitleMonthlyPayReport      |
++-----------------------------------+
+| - jobTitleId: int                 |
+| - jobTitleName: String            |
+| - month: int                      |
+| - year: int                       |
+| - totalPay: double                |
++-----------------------------------+
+| + JobTitleMonthlyPayReport(...)   |
+| + getJobTitleId(): int            |
+| + getJobTitleName(): String       |
+| + getMonth(): int                 |
+| + getYear(): int                  |
+| + getTotalPay(): double           |
++-----------------------------------+

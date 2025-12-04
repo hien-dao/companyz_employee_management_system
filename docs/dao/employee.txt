@@ -1,0 +1,74 @@
++-----------------------------------+
+|        <<abstract>> AbstractDao   |
++-----------------------------------+
+| # getConnection(): Connection     |
+| # prepareStatement(conn:Connection,
+|   sql:String, params:Object...):  |
+|   PreparedStatement               |
++-----------------------------------+
+
++-----------------------------------+
+|          <<interface>>            |
+|           EmployeeDao             |
++-----------------------------------+
+| + findById(empId:int): Optional<BaseEmployee>  |
+| + findByName(firstName:String, lastName:String): Optional<BaseEmployee> |
+| + findBySsn(ssnHash:String): Optional<BaseEmployee> |
+| + findByDob(dob:LocalDate): List<BaseEmployee> |
+| + findAll(): List<BaseEmployee>                |
+| + createEmployee(employee:BaseEmployee): BaseEmployee |
+| + updateEmployee(employee:BaseEmployee): BaseEmployee |
+| + deleteEmployee(empId:int): boolean           |
+| + getEmployeeHireByDateRange(start:LocalDate, end:LocalDate): EmployeeHireReport |
++-----------------------------------+
+
++-----------------------------------+
+|          <<interface>>            |
+|           DivisionDao             |
++-----------------------------------+
+| + findById(divisionId:int): Optional<Division> |
+| + findByName(name:String): Optional<Division>  |
+| + findAll(): List<Division>                    |
+| + createDivision(division:Division): Division  |
+| + updateDivision(division:Division): Division  |
+| + deleteDivision(divisionId:int): boolean      |
++-----------------------------------+
+
+
++-----------------------------------+
+|          <<interface>>            |
+|       EmploymentStatusDao         |
++-----------------------------------+
+| + findById(statusId:int): Optional<EmploymentStatus> |
+| + findByName(name:String): Optional<EmploymentStatus> |
+| + findAll(): List<EmploymentStatus>                  |
+| + createStatus(status:EmploymentStatus): EmploymentStatus |
+| + updateStatus(status:EmploymentStatus): EmploymentStatus |
+| + deleteStatus(statusId:int): boolean                |
++-----------------------------------+
+
++-----------------------------------+
+|          <<interface>>            |
+|           JobTitleDao             |
++-----------------------------------+
+| + findById(jobTitleId:int): Optional<JobTitle> |
+| + findByName(name:String): Optional<JobTitle>  |
+| + findAll(): List<JobTitle>                    |
+| + createJobTitle(jobTitle:JobTitle): JobTitle  |
+| + updateJobTitle(jobTitle:JobTitle): JobTitle  |
+| + deleteJobTitle(jobTitleId:int): boolean      |
++-----------------------------------+
+
++-----------------------------------+
+|          <<interface>>            |
+|           PayrollDao              |
++-----------------------------------+
+| + findById(payrollId:int): Optional<Payroll>   |
+| + findAll(): List<Payroll>                     |
+| + createPayroll(payroll:Payroll): Payroll      |
+| + updatePayroll(payroll:Payroll): Payroll      |
+| + deletePayroll(payrollId:int): boolean        |
+| + getPayrollsByEmployee(empId:int): EmployeePayrollReport |
+| + getTotalPayByDivision(divisionId:int, month:int, year:int): DivisionMonthlyPayReport |
+| + getTotalPayByJobTitle(jobTitleId:int, month:int, year:int): JobTitleMonthlyPayReport |
++-----------------------------------+
