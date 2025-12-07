@@ -11,32 +11,60 @@ UI Layer (JavaFX Controllers)
 Service Layer (Business Logic)
  ├── EmployeeService
  │    └── uses EmployeeDao, DivisionDao, JobTitleDao, EmploymentStatusDao
- ├── PayrollService
- │    └── uses PayrollDao
+ │    └── create/update/delete employees
+ │    └── logs changes via ChangeLogger
+ │
  ├── ReportService
  │    ├── getEmployeePayrollReport(empId)
  │    │    └── PayrollDao.getPayrollsByEmployee(empId)
  │    │         └── returns List<Payroll>
  │    │         └── builds EmployeePayrollReport DTO
  │    │
- │    ├── getDivisionMonthlyReport(divisionId, month)
- │    │    └── PayrollDao.getTotalPayByDivision(divisionId, month)
- │    │         └── returns double totalPay
+ │    ├── getDivisionMonthlyReport(divisionId, month, year)
+ │    │    └── PayrollDao.getTotalPayByDivision(divisionId, month, year)
  │    │         └── builds DivisionMonthlyPayReport DTO
  │    │
- │    └── getJobTitleMonthlyReport(jobTitleId, month)
- │    |    └── PayrollDao.getTotalPayByJobTitle(jobTitleId, month)
- │    |         └── returns double totalPay
- │    |         └── builds JobTitleMonthlyPayReport DTO
+ │    ├── getJobTitleMonthlyReport(jobTitleId, month, year)
+ │    │    └── PayrollDao.getTotalPayByJobTitle(jobTitleId, month, year)
+ │    │         └── builds JobTitleMonthlyPayReport DTO
+ │    │
  │    └── getEmployeeHireReport(startDate, endDate)
+ │         └── EmployeeDao.getEmployeeHireByDateRange(...)
+ │         └── builds EmployeeHireReport DTO
+ │
  └── UserService
       ├── authenticateUser(username, password)
-      │    └── UserDao.findByUsername(username)
-      │         └── returns Optional<User>
+      │    └── AuthService.login(...)   (from /security)
+      │         └── UserDao.findByUsername(username)
+      │         └── PasswordHasher.verify(...)
+      │         └── AuthEventLogger.logEvent(...)
+      │         └── returns SessionContext
+      │
       ├── assignRoles(userId, roles)
-      │    └── RoleDao
-      └── deactivateUser(userId)
-           └── UserDao.deactivateUser(userId)
+      │    └── RoleDao.addRoleToUser(...)
+      │    └── ChangeLogger.logChange(...)
+      │
+      ├── deactivateUser(userId)
+      │    └── UserDao.deactivateUser(userId)
+      │    └── ChangeLogger.logChange(...)
+      │
+      └── updatePassword(userId, newPassword)
+           └── UserDao.updatePassword(...)
+           └── ChangeLogger.logChange(...)
+
+Security Layer
+ ├── AuthService
+ │    ├── login(username, password)
+ │    ├── logout(session)
+ │    └── updatePassword(userId, newPassword)
+ │
+ ├── AuthorizationService
+ │    └── role/permission checks
+ ├── PasswordHasher
+ │    └── hashWithSalt, verify
+ └── SessionContext
+      └── holds userId, role, employeeId, timeout, activity state
+
 
 DAO Layer (Persistence)
  ├── EmployeeDao
@@ -50,18 +78,23 @@ DAO Layer (Persistence)
  │    └── fetch/update EmploymentStatus
  ├── PayrollDao
  │    ├── getPayrollsByEmployee(empId)
- │    ├── getTotalPayByDivision(divisionId, month)
- │    └── getTotalPayByJobTitle(jobTitleId, month)
+ │    ├── getTotalPayByDivision(divisionId, month, year)
+ │    └── getTotalPayByJobTitle(jobTitleId, month, year)
  ├── UserDao
  │    ├── findById(userId)
  │    ├── findByUsername(username)
  │    ├── createUser(User, empId, roles)
  │    ├── updatePassword(userId, hash, salt)
  │    └── deactivateUser(userId)
- └── RoleDao
-      ├── findAll()
-      ├── findById(roleId)
-      └── CRUD for Role
+ ├── RoleDao
+ │    ├── findAll()
+ │    ├── findById(roleId)
+ │    └── CRUD for Role
+ ├── ChangeLogger
+ │    └── logs INSERT/UPDATE/DELETE with old/new JSON values
+ └── AuthEventLogger
+      └── logs LOGIN/LOGOUT events
+
 
 Model Layer
  ├── Person (abstract)
@@ -71,6 +104,8 @@ Model Layer
  ├── Division
  ├── JobTitle
  ├── EmploymentStatus
+ ├── Address
+ ├── Contact
  ├── User
  │    └── has Employee id, List<Role>
  ├── Role
