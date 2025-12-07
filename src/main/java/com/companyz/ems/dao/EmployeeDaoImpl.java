@@ -232,6 +232,63 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
         return new EmployeeHireReport(start, end, hires);
     }
 
+    @Override
+    public int increaseSalaryByRange(double percent, double minSalary, double maxSalary,
+                                    String reason, int changedByUserId) {
+        String selectSql = "SELECT empid, salary FROM employees WHERE salary >= ? AND salary < ?";
+        String updateSql = "UPDATE employees SET salary = ?, updated_at = NOW() WHERE empid = ?";
+        String insertHistorySql = "INSERT INTO salary_history " +
+            "(empid, previous_salary, new_salary, change_reason, changed_by_user_id, changed_at) " +
+            "VALUES (?, ?, ?, ?, ?, NOW())";
+
+        int updatedCount = 0;
+
+        try (Connection conn = getConnection();
+            PreparedStatement selectStmt = conn.prepareStatement(selectSql);
+            PreparedStatement updateStmt = conn.prepareStatement(updateSql);
+            PreparedStatement historyStmt = conn.prepareStatement(insertHistorySql)) {
+
+            conn.setAutoCommit(false);
+
+            selectStmt.setDouble(1, minSalary);
+            selectStmt.setDouble(2, maxSalary);
+
+            try (ResultSet rs = selectStmt.executeQuery()) {
+                while (rs.next()) {
+                    int empId = rs.getInt("empid");
+                    double oldSalary = rs.getDouble("salary");
+                    double newSalary = Math.round(oldSalary * (1 + percent / 100.0) * 100.0) / 100.0;
+
+                    // update employees
+                    updateStmt.setDouble(1, newSalary);
+                    updateStmt.setInt(2, empId);
+                    updateStmt.addBatch();
+
+                    // insert salary_history
+                    historyStmt.setInt(1, empId);
+                    historyStmt.setDouble(2, oldSalary);
+                    historyStmt.setDouble(3, newSalary);
+                    historyStmt.setString(4, reason);
+                    historyStmt.setInt(5, changedByUserId);
+                    historyStmt.addBatch();
+
+                    updatedCount++;
+                }
+            }
+
+            updateStmt.executeBatch();
+            historyStmt.executeBatch();
+            conn.commit();
+
+        } catch (SQLException e) {
+            logError(e);
+            updatedCount = 0;
+        }
+
+        return updatedCount;
+    }
+
+
     // --- Mapping Helpers ---
     private BaseEmployee mapEmployee(ResultSet rs, Connection conn) throws SQLException {
         FullTimeEmployee emp = new FullTimeEmployee();

@@ -24,5 +24,27 @@ public interface EmployeeDao {
     boolean deleteEmployee(int empId);
 
     // --- Reporting ---
+    /**
+     * Generates a report of employees hired within the specified date range.
+     * Returns an EmployeeHireReport containing the relevant data.
+     * @param startDate
+     * @param endDate
+     * @return
+     */
     EmployeeHireReport getEmployeeHireByDateRange(LocalDate startDate, LocalDate endDate);
+
+    // --- Increase salary ---
+    /**
+     * Increases salary by percent for employees within the specified salary range.
+     * Records the reason and the user who made the change.
+     * Returns the number of employees whose salaries were increased.
+     * @param percent
+     * @param minSalary
+     * @param maxSalary
+     * @param reason
+     * @param changedByUserId
+     * @return
+     */
+    int increaseSalaryByRange(double percent, double minSalary, double maxSalary, 
+        String reason, int changedByUserId);
 }
