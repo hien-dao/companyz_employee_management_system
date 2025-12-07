@@ -23,3 +23,33 @@
 | + addRoleToUser(userId:int, roleId:int): boolean |
 | + removeRoleFromUser(userId:int, roleId:int): boolean |
 +-----------------------------------+
+
++-----------------------------------+
+|           <<class>>               |
+|          ChangeLogger             |
++-----------------------------------+
+| - (inherits) AbstractDao          |
++-----------------------------------+
+| + logChange(                      |
+|   tableName:String,               |
+|   recordPk:String,                |
+|   operation:String,               |
+|   changedByUserId:int,            |
+|   oldValuesJson:String,           |
+|   newValuesJson:String            |
+|  ): void                          |
++-----------------------------------+
+
++-----------------------------------+
+|           <<class>>               |
+|        AuthEventLogger            |
++-----------------------------------+
+| - (inherits) AbstractDao          |
++-----------------------------------+
+| + logEvent(                       |
+|   userId:int,                     |
+|   eventType:String,               |
+|   ipAddress:String,               |
+|   userAgent:String                |
+|  ): void                          |
++-----------------------------------+

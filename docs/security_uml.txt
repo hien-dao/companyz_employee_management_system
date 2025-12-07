@@ -1,0 +1,79 @@
++-----------------------------------+
+|           <<class>>               |
+|           AuthService             |
++-----------------------------------+
+| - userDao: UserDao                |
+| - hasher: PasswordHasher          |
+| - sessionTimeoutMinutes: int      |
++-----------------------------------+
+| + AuthService(userDao:UserDao)    |
+| + login(username:String,          |
+|         password:char[]):         |
+|         Optional<SessionContext>  |
+| + updatePassword(userId:int,      |
+|         newPassword:char[]):      |
+|         boolean                   |
+| + logout(session:SessionContext): |
+|         void                      |
++-----------------------------------+
+
++-----------------------------------+
+|        <<class>>                  |
+|     AuthorizationService          |
++-----------------------------------+
+| + hasRole(user:User, role:String):boolean |
+| + isOwner(user:User, resourceId:int):boolean |
+| + canAccess(user:User, permission:String):boolean |
++-----------------------------------+
+
++-----------------------------------+
+|           <<class>>               |
+|         PasswordHasher            |
++-----------------------------------+
+| - strength:int                    |
+| - random:SecureRandom             |
++-----------------------------------+
+| + PasswordHasher(strength:int)    |
+| + hashWithSalt(password:char[]):  |
+|         HashedPassword            |
+| + verify(password:char[],         |
+|         storedHash:byte[],        |
+|         storedSalt:byte[]):       |
+|         boolean                   |
++-----------------------------------+
+
++-----------------------------------+
+|        <<class>>                  |
+|     PasswordHasher.HashedPassword |
++-----------------------------------+
+| - hash: byte[]                    |
+| - salt: byte[]                    |
++-----------------------------------+
+| + getHash(): byte[]               |
+| + getSalt(): byte[]               |
++-----------------------------------+
+
++-----------------------------------+
+|           <<class>>               |
+|        SessionContext             |
++-----------------------------------+
+| - userId:int                      |
+| - role:String                     |
+| - employeeId:Integer              |
+| - timeoutMinutes:int              |
+| - loginTime:long                  |
+| - lastActivityTime:long           |
+| - active:boolean                  |
++-----------------------------------+
+| + SessionContext(userId:int,      |
+|         role:String,              |
+|         employeeId:Integer,       |
+|         timeoutMinutes:int)       |
+| + getUserId():int                 |
+| + getRole():String                |
+| + getEmployeeId():Integer         |
+| + touch():void                    |
+| + isExpired():boolean             |
+| + isActive():boolean              |
+| + invalidate():void               |
++-----------------------------------+
