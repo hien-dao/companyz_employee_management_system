@@ -2,11 +2,11 @@ package com.companyz.ems.services;
 
 import java.util.Optional;
 
-import com.companyz.ems.security.SessionContext;
 import com.companyz.ems.model.employee.Employee;
+import com.companyz.ems.security.SessionContext;
 
 public interface UserService {
-    Optional<SessionContext> authenticateUser(String username, char[] password);
+    Optional<SessionContext> authenticateUser(String username, String password);
 
     boolean createUser(SessionContext ctx, String username, Employee employee, char[] password, String role);
 

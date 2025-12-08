@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.companyz.ems.dao.helper.EmployeePersistenceHelper;
+import com.companyz.ems.model.employee.BaseEmployee;
 import com.companyz.ems.model.employee.Employee;
 import com.companyz.ems.model.employee.FullTimeEmployee;
 import com.companyz.ems.model.report.EmployeeHireReport;
@@ -126,7 +127,7 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
     }
 
     @Override
-    public Employee createEmployee(Employee employee) {
+    public Employee createEmployee( BaseEmployee employee) {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(INSERT_EMPLOYEE, Statement.RETURN_GENERATED_KEYS)) {
 
@@ -152,7 +153,7 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
             EmployeePersistenceHelper.saveJobTitle(conn, employee);
             EmployeePersistenceHelper.saveStatus(conn, employee);
 
-            return employee;
+            return (Employee) employee;
         } catch (SQLException e) {
             logError(e);
             return null;
@@ -160,7 +161,7 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
     }
 
     @Override
-    public Employee updateEmployee(Employee employee) {
+    public Employee updateEmployee(BaseEmployee employee) {
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(UPDATE_EMPLOYEE)) {
 
@@ -177,7 +178,7 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
             EmployeePersistenceHelper.updateJobTitle(conn, employee);
             EmployeePersistenceHelper.updateStatus(conn, employee);
 
-            return employee;
+            return (Employee) employee;
         } catch (SQLException e) {
             logError(e);
             return null;

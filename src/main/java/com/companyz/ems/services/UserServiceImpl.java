@@ -7,7 +7,9 @@ import com.companyz.ems.config.SecurityConfig;
 import com.companyz.ems.dao.AuthEventLogger;
 import com.companyz.ems.dao.ChangeLogger;
 import com.companyz.ems.dao.RoleDao;
+import com.companyz.ems.dao.RoleDaoImpl;
 import com.companyz.ems.dao.UserDao;
+import com.companyz.ems.dao.UserDaoImpl;
 import com.companyz.ems.model.Role;
 import com.companyz.ems.model.User;
 import com.companyz.ems.model.employee.Employee;
@@ -40,9 +42,18 @@ public class UserServiceImpl implements UserService {
         this.authzService = authzService;
     }
 
+    public UserServiceImpl() {
+        this.userDao = new UserDaoImpl();
+        this.roleDao = new RoleDaoImpl();
+        this.changeLogger = new ChangeLogger();
+        this.authEventLogger = new AuthEventLogger();
+        this.authService = new AuthService(this.userDao);
+        this.authzService = new AuthorizationService();
+    }
+
     @Override
-    public Optional<SessionContext> authenticateUser(String username, char[] password) {
-        Optional<SessionContext> ctx = authService.login(username, password);
+    public Optional<SessionContext> authenticateUser(String username, String password) {
+        Optional<SessionContext> ctx = authService.login(username, password.toCharArray());
         ctx.ifPresent(session -> {
             // Use null for IP and "javafx" for user agent
             authEventLogger.logEvent(session.getUserId(), "LOGIN", null, "javafx");

@@ -5,10 +5,15 @@ import java.util.List;
 import java.util.Optional;
 
 import com.companyz.ems.dao.DivisionDao;
+import com.companyz.ems.dao.DivisionDaoImpl;
 import com.companyz.ems.dao.EmployeeDao;
+import com.companyz.ems.dao.EmployeeDaoImpl;
 import com.companyz.ems.dao.EmploymentStatusDao;
+import com.companyz.ems.dao.EmploymentStatusDaoImpl;
 import com.companyz.ems.dao.JobTitleDao;
+import com.companyz.ems.dao.JobTitleDaoImpl;
 import com.companyz.ems.dao.PayrollDao;
+import com.companyz.ems.dao.PayrollDaoImpl;
 import com.companyz.ems.model.Division;
 import com.companyz.ems.model.Payroll;
 import com.companyz.ems.model.employee.Employee;
@@ -43,6 +48,16 @@ public class EmployeeServiceImpl implements EmployeeService {
         this.payrollDao = payrollDao;
         this.ssnEncryptor = ssnEncryptor;
         this.authzService = authzService;
+    }
+
+    public EmployeeServiceImpl() {
+        this.employeeDao = new EmployeeDaoImpl();
+        this.divisionDao = new DivisionDaoImpl();
+        this.jobTitleDao = new JobTitleDaoImpl();
+        this.statusDao = new EmploymentStatusDaoImpl();
+        this.payrollDao = new PayrollDaoImpl();
+        this.ssnEncryptor = new SsnEncryptor();
+        this.authzService = new AuthorizationService();
     }
 
     // --- Employee CRUD ---
