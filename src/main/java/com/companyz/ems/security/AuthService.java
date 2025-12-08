@@ -1,6 +1,5 @@
 package com.companyz.ems.security;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import com.companyz.ems.config.SecurityConfig;
@@ -41,9 +40,6 @@ public class AuthService {
         }
 
         logger.logEvent(user.getUserId(), "LOGIN_SUCCESS", null, "JavaFX");
-
-        // set expiry time based on timeout
-        LocalDateTime expiry = LocalDateTime.now().plusMinutes(sessionTimeoutMinutes);
 
         // no need to compute expiry here; pass timeoutMinutes instead
         return Optional.of(new SessionContext(
