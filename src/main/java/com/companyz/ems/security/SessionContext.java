@@ -1,5 +1,8 @@
 package com.companyz.ems.security;
 
+import java.time.Duration;
+import java.time.Instant;
+
 /**
  * Represents a logged-in user session with timeout enforcement.
  */
@@ -8,8 +11,8 @@ public class SessionContext {
     private final String role;
     private final Integer employeeId;
     private final int timeoutMinutes;
-    private final long loginTime;
-    private long lastActivityTime;
+    private final Instant loginTime;
+    private Instant lastActivityTime;
     private boolean active;
 
     public SessionContext(int userId, String role, Integer employeeId, int timeoutMinutes) {
@@ -17,7 +20,7 @@ public class SessionContext {
         this.role = role;
         this.employeeId = employeeId;
         this.timeoutMinutes = timeoutMinutes;
-        this.loginTime = System.currentTimeMillis();
+        this.loginTime = Instant.now();
         this.lastActivityTime = loginTime;
         this.active = true;
     }
@@ -26,14 +29,47 @@ public class SessionContext {
     public String getRole() { return role; }
     public Integer getEmployeeId() { return employeeId; }
 
-    public void touch() { this.lastActivityTime = System.currentTimeMillis(); }
-
-    public boolean isExpired() {
-        long elapsed = System.currentTimeMillis() - lastActivityTime;
-        return elapsed > timeoutMinutes * 60_000L;
+    /**
+     * Update last activity timestamp (e.g., on any user action).
+     */
+    public void touch() {
+        this.lastActivityTime = Instant.now();
     }
 
-    public boolean isActive() { return active && !isExpired(); }
+    /**
+     * Returns the absolute expiry time based on last activity.
+     */
+    public Instant getExpiryTime() {
+        return lastActivityTime.plus(Duration.ofMinutes(timeoutMinutes));
+    }
 
-    public void invalidate() { this.active = false; }
+    /**
+     * Check if the session has expired.
+     */
+    public boolean isExpired() {
+        return Instant.now().isAfter(getExpiryTime());
+    }
+
+    /**
+     * Check if the session is still active (not invalidated and not expired).
+     */
+    public boolean isActive() {
+        return active && !isExpired();
+    }
+
+    /**
+     * Invalidate the session manually (e.g., on logout).
+     */
+    public void inValidated() {
+        this.active = false;
+    }
+
+    /**
+     * Remaining minutes until expiration (for UI display or warnings).
+     */
+    public long remainingMinutes() {
+        if (!isActive()) return 0;
+        Duration remaining = Duration.between(Instant.now(), getExpiryTime());
+        return Math.max(0, remaining.toMinutes());
+    }
 }
