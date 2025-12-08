@@ -32,7 +32,7 @@ CREATE TABLE payroll (
   state_tax DECIMAL(12,2) NOT NULL DEFAULT 0,   -- state tax withheld
   retire_401k DECIMAL(12,2) NOT NULL DEFAULT 0, -- retirement contribution
   health_care DECIMAL(12,2) NOT NULL DEFAULT 0, -- healthcare deduction
-  net_pay DECIMAL(12,2) AS (earnings - (fed_tax + fed_med + fed_ss + state_tax + retire_401k + health_care)) STORED, -- calculated net pay
+  net_pay DECIMAL(12,2) NOT NULL, --  net pay
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (payroll_run_id) REFERENCES payroll_runs(payroll_run_id) ON DELETE CASCADE,
   FOREIGN KEY (empid) REFERENCES employees(empid) ON DELETE CASCADE
