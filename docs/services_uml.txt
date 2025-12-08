@@ -1,0 +1,99 @@
++---------------------------------------------------+
+|                   <<interface>>                   |
+|                 EmployeeService                   |
++---------------------------------------------------+
+| + getEmployeeByName(ctx: SessionContext,          |
+|   firstName: String, lastName: String): Optional<Employee> |
+| + getAllEmployees(ctx: SessionContext): List<Employee>     |
+|                                                     |
+| + createEmployee(ctx: SessionContext, ...): boolean |
+| + updateEmployee(ctx: SessionContext, ...): boolean |
+| + deleteEmployee(ctx: SessionContext, empId: int): boolean |
+|                                                     |
+| + getSelfEmployeeInfo(ctx: SessionContext): Optional<Employee> |
+|                                                     |
+| + searchByName(ctx: SessionContext, ...): Optional<Employee>   |
+| + searchBySsn(ctx: SessionContext, ssn: String): Optional<Employee> |
+| + searchByDob(ctx: SessionContext, dob: LocalDate): List<Employee>  |
+| + searchByEmpId(ctx: SessionContext, empId: int): Optional<Employee> |
+|                                                     |
+| + getDivisionByName(ctx: SessionContext, name: String): Optional<Division> |
+| + getAllDivisions(ctx: SessionContext): List<Division> |
+| + createDivision(ctx: SessionContext, ...): boolean  |
+| + updateDivision(ctx: SessionContext, ...): boolean  |
+| + deleteDivision(ctx: SessionContext, divisionId: int): boolean |
+|                                                     |
+| + getJobTitleByName(ctx: SessionContext, name: String): Optional<JobTitle> |
+| + getAllJobTitles(ctx: SessionContext): List<JobTitle> |
+| + createJobTitle(ctx: SessionContext, ...): boolean  |
+| + updateJobTitle(ctx: SessionContext, ...): boolean  |
+| + deleteJobTitle(ctx: SessionContext, jobTitleId: int): boolean |
+|                                                     |
+| + getEmploymentStatusByName(ctx: SessionContext, name: String): Optional<EmploymentStatus> |
+| + getAllEmploymentStatuses(ctx: SessionContext): List<EmploymentStatus> |
+| + createEmploymentStatus(ctx: SessionContext, ...): boolean |
+| + updateEmploymentStatus(ctx: SessionContext, ...): boolean |
+| + deleteEmploymentStatus(ctx: SessionContext, statusId: int): boolean |
+|                                                     |
+| + getAllPayrolls(ctx: SessionContext): List<Payroll> |
+| + createPayroll(ctx: SessionContext, ...): boolean   |
+| + updatePayroll(ctx: SessionContext, ...): boolean   |
+| + deletePayroll(ctx: SessionContext, payrollId: int): boolean |
+|                                                     |
+| + increaseSalaryByRange(ctx: SessionContext,        |
+|   percent: double, minSalary: double, maxSalary: double, reason: String): int |
++---------------------------------------------------+
+
++---------------------------------------------+
+|               <<interface>>                 |
+|                 UserService                 |
++---------------------------------------------+
+| + authenticateUser(username: String,        |
+|   password: String): Optional<SessionContext> |
+|                                             |
+| + createUser(ctx: SessionContext,           |
+|   username: String,                         |
+|   employee: Employee,                       |
+|   password: char[],                         |
+|   role: String): boolean                    |
+|                                             |
+| + assignRoles(ctx: SessionContext,          |
+|   username: String, role: String): boolean  |
+|                                             |
+| + deactivateUser(ctx: SessionContext,       |
+|   username: String): boolean                |
+|                                             |
+| + updatePassword(ctx: SessionContext,       |
+|   username: String,                         |
+|   oldPassword: char[],                      |
+|   newPassword: char[]): boolean             |
++---------------------------------------------+
+
++---------------------------------------------------+
+|                  <<interface>>                    |
+|                  ReportService                    |
++---------------------------------------------------+
+| + getEmployeePayrollHistory(                      |
+|     ctx: SessionContext                           |
+|   ): EmployeePayrollReport                        |
+|                                                   |
+| + getMonthlyPayByJobTitle(                        |
+|     ctx: SessionContext,                          |
+|     jobTitleName: String,                         |
+|     year: int,                                    |
+|     month: int                                    |
+|   ): JobTitleMonthlyPayReport                     |
+|                                                   |
+| + getMonthlyPayByDivision(                        |
+|     ctx: SessionContext,                          |
+|     divisionName: String,                         |
+|     year: int,                                    |
+|     month: int                                    |
+|   ): DivisionMonthlyPayReport                     |
+|                                                   |
+| + getEmployeesHiredWithinDateRange(               |
+|     ctx: SessionContext,                          |
+|     startDay: int, startMonth: int, startYear: int,|
+|     endDay: int, endMonth: int, endYear: int      |
+|   ): EmployeeHireReport                           |
++---------------------------------------------------+
