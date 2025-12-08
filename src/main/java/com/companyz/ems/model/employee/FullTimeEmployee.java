@@ -64,14 +64,24 @@ public class FullTimeEmployee extends BaseEmployee implements Employee {
     }
 
     @Override
-public String getPrimaryEmail() {
-    if (getContacts() == null) return null;
-    return getContacts().stream()
-        .filter(c -> "EMAIL".equalsIgnoreCase(c.getContactType()) && Boolean.TRUE.equals(c.getIsPrimary()))
-        .map(Contact::getContactValue)
-        .findFirst()
-        .orElse(null);
-}
+    public String getPrimaryEmail() {
+        if (getContacts() == null) return null;
+        return getContacts().stream()
+            .filter(c -> "EMAIL".equalsIgnoreCase(c.getContactType()) && Boolean.TRUE.equals(c.getIsPrimary()))
+            .map(Contact::getContactValue)
+            .findFirst()
+            .orElse(null);
+    }
+
+    public void setPrimaryEmail(String email) {
+        if (getContacts() == null) return;
+        for (Contact c : getContacts()) {
+            if ("EMAIL".equalsIgnoreCase(c.getContactType()) && Boolean.TRUE.equals(c.getIsPrimary())) {
+                c.setContactValue(email);
+                return;
+            }
+        }
+    }
 
     @Override
     public String getPrimaryPhoneNumber() {
@@ -82,6 +92,16 @@ public String getPrimaryEmail() {
             .map(Contact::getContactValue)
             .findFirst()
             .orElse(null);
+    }
+    public void setPrimaryPhoneNumber(String phoneNumber) {
+        if (getContacts() == null) return;
+        for (Contact c : getContacts()) {
+            if (("PHONE".equalsIgnoreCase(c.getContactType()) || "MOBILE".equalsIgnoreCase(c.getContactType()))
+                && Boolean.TRUE.equals(c.getIsPrimary())) {
+                c.setContactValue(phoneNumber);
+                return;
+            }
+        }
     }
 
     @Override

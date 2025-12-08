@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.companyz.ems.dao.helper.EmployeePersistenceHelper;
-import com.companyz.ems.model.employee.BaseEmployee;
+import com.companyz.ems.model.employee.Employee;
 import com.companyz.ems.model.employee.FullTimeEmployee;
 import com.companyz.ems.model.report.EmployeeHireReport;
 
@@ -38,7 +38,7 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
 
 
     @Override
-    public Optional<BaseEmployee> findById(int empId) {
+    public Optional<Employee> findById(int empId) {
         String sql = SELECT_EMPLOYEE + "WHERE empid=?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = prepareStatement(conn, sql, empId);
@@ -53,10 +53,10 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
     }
 
     @Override
-    public Optional<BaseEmployee> findByName(String firstName, String lastName) {
+    public Optional<Employee> findByName(String firstName, String lastName) {
         String sql = SELECT_EMPLOYEE + "WHERE fname = ? AND lname = ?";
         try (Connection conn = getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, firstName);
             stmt.setString(2, lastName);
             try (ResultSet rs = stmt.executeQuery()) {
@@ -71,10 +71,10 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
     }
 
     @Override
-    public Optional<BaseEmployee> findBySsn(String ssnHash) {
+    public Optional<Employee> findBySsn(String ssnHash) {
         String sql = SELECT_EMPLOYEE + "WHERE ssn_hash = ?";
         try (Connection conn = getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, ssnHash);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
@@ -87,10 +87,9 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
         return Optional.empty();
     }
 
-
     @Override
-    public List<BaseEmployee> findByDob(LocalDate dob) {
-        List<BaseEmployee> employees = new ArrayList<>();
+    public List<Employee> findByDob(LocalDate dob) {
+        List<Employee> employees = new ArrayList<>();
         String sql =
             SELECT_EMPLOYEE +
             "WHERE empid IN (" +
@@ -98,7 +97,7 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
             ")";
 
         try (Connection conn = getConnection();
-            PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setDate(1, Date.valueOf(dob));
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
@@ -111,10 +110,9 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
         return employees;
     }
 
-
     @Override
-    public List<BaseEmployee> findAll() {
-        List<BaseEmployee> employees = new ArrayList<>();
+    public List<Employee> findAll() {
+        List<Employee> employees = new ArrayList<>();
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(SELECT_EMPLOYEE);
              ResultSet rs = stmt.executeQuery()) {
@@ -128,13 +126,13 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
     }
 
     @Override
-    public BaseEmployee createEmployee(BaseEmployee employee) {
+    public Employee createEmployee(Employee employee) {
         try (Connection conn = getConnection();
-            PreparedStatement stmt = conn.prepareStatement(INSERT_EMPLOYEE, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement stmt = conn.prepareStatement(INSERT_EMPLOYEE, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setString(1, employee.getFirstName());
             stmt.setString(2, employee.getLastName());
-            stmt.setInt(3, employee.getEmploymentStatusId()); // maps to employment_type_id
+            stmt.setInt(3, employee.getEmploymentStatusId());
             stmt.setDouble(4, employee instanceof FullTimeEmployee ? ((FullTimeEmployee) employee).getSalary() : 0.0);
             stmt.setString(5, employee.getSsnLast4());
             stmt.setString(6, employee.getSsnHash());
@@ -148,7 +146,6 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
                 }
             }
 
-            // Delegate to helper for related tables
             EmployeePersistenceHelper.saveContacts(conn, employee);
             EmployeePersistenceHelper.saveDemographics(conn, employee);
             EmployeePersistenceHelper.saveDivision(conn, employee);
@@ -163,9 +160,9 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
     }
 
     @Override
-    public BaseEmployee updateEmployee(BaseEmployee employee) {
+    public Employee updateEmployee(Employee employee) {
         try (Connection conn = getConnection();
-            PreparedStatement stmt = conn.prepareStatement(UPDATE_EMPLOYEE)) {
+             PreparedStatement stmt = conn.prepareStatement(UPDATE_EMPLOYEE)) {
 
             stmt.setString(1, employee.getFirstName());
             stmt.setString(2, employee.getLastName());
@@ -174,7 +171,6 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
             stmt.setInt(5, employee.getEmpId());
             stmt.executeUpdate();
 
-            // Delegate updates to helper
             EmployeePersistenceHelper.updateContacts(conn, employee);
             EmployeePersistenceHelper.updateDemographics(conn, employee);
             EmployeePersistenceHelper.updateDivision(conn, employee);
@@ -244,9 +240,9 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
         int updatedCount = 0;
 
         try (Connection conn = getConnection();
-            PreparedStatement selectStmt = conn.prepareStatement(selectSql);
-            PreparedStatement updateStmt = conn.prepareStatement(updateSql);
-            PreparedStatement historyStmt = conn.prepareStatement(insertHistorySql)) {
+             PreparedStatement selectStmt = conn.prepareStatement(selectSql);
+             PreparedStatement updateStmt = conn.prepareStatement(updateSql);
+             PreparedStatement historyStmt = conn.prepareStatement(insertHistorySql)) {
 
             conn.setAutoCommit(false);
 
@@ -288,9 +284,8 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
         return updatedCount;
     }
 
-
     // --- Mapping Helpers ---
-    private BaseEmployee mapEmployee(ResultSet rs, Connection conn) throws SQLException {
+    private Employee mapEmployee(ResultSet rs, Connection conn) throws SQLException {
         FullTimeEmployee emp = new FullTimeEmployee();
         emp.setEmpId(rs.getInt("empid"));
         emp.setFirstName(rs.getString("fname"));

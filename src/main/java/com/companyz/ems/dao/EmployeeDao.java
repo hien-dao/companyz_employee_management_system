@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.companyz.ems.model.employee.BaseEmployee;
+import com.companyz.ems.model.employee.Employee;
 import com.companyz.ems.model.report.EmployeeHireReport;
 
 /**
@@ -12,15 +13,15 @@ import com.companyz.ems.model.report.EmployeeHireReport;
  * Works only with BaseEmployee (IDs + core fields).
  */
 public interface EmployeeDao {
-    Optional<BaseEmployee> findById(int empId);
-    Optional<BaseEmployee> findByName(String firstName, String lastName);
-    Optional<BaseEmployee> findBySsn(String ssnHash);
+    Optional<Employee> findById(int empId);
+    Optional<Employee> findByName(String firstName, String lastName);
+    Optional<Employee> findBySsn(String ssnHash);
 
-    List<BaseEmployee> findByDob(LocalDate dob);
-    List<BaseEmployee> findAll();
+    List<Employee> findByDob(LocalDate dob);
+    List<Employee> findAll();
 
-    BaseEmployee createEmployee(BaseEmployee employee);   // return created entity with generated ID
-    BaseEmployee updateEmployee(BaseEmployee employee);   // return updated entity
+    Employee createEmployee(BaseEmployee employee);   // return created entity with generated ID
+    Employee updateEmployee(BaseEmployee employee);   // return updated entity
     boolean deleteEmployee(int empId);
 
     // --- Reporting ---
