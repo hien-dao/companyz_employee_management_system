@@ -67,23 +67,28 @@ VALUES
   (49, 'WI', 'Wisconsin'), (50, 'WY', 'Wyoming')
 ON DUPLICATE KEY UPDATE state_name = VALUES(state_name);
 
--- Major US cities (one per region for demo)
-INSERT INTO cities (cityid, city_name, stateid, countryid)
-VALUES
-  (1, 'San Francisco', 5, 1),      -- CA
-  (2, 'New York', 32, 1),          -- NY
-  (3, 'Chicago', 13, 1),           -- IL
-  (4, 'Los Angeles', 5, 1),        -- CA
-  (5, 'Houston', 43, 1),           -- TX
-  (6, 'Phoenix', 3, 1),            -- AZ
-  (7, 'Denver', 6, 1),             -- CO
-  (8, 'Seattle', 47, 1),           -- WA
-  (9, 'Boston', 21, 1),            -- MA
-  (10, 'Atlanta', 10, 1),          -- GA
-  (11, 'Toronto', NULL, 2),        -- Canada
-  (12, 'Vancouver', NULL, 2),      -- Canada
-  (13, 'Mexico City', NULL, 3)     -- Mexico
-ON DUPLICATE KEY UPDATE city_name = VALUES(city_name);
+-- Cities (20 major cities in US, Canada, Mexico)
+INSERT INTO cities (cityid, city_name, stateid, countryid) VALUES
+(1, 'New York', 33, 1),       -- NY, US
+(2, 'Los Angeles', 5, 1),     -- CA, US
+(3, 'Chicago', 14, 1),        -- IL, US
+(4, 'Houston', 43, 1),        -- TX, US
+(5, 'Miami', 9, 1),           -- FL, US
+(6, 'Atlanta', 10, 1),        -- GA, US
+(7, 'Boston', 20, 1),         -- MA, US
+(8, 'Seattle', 49, 1),        -- WA, US
+(9, 'Denver', 6, 1),          -- CO, US
+(10, 'Phoenix', 3, 1),        -- AZ, US
+(11, 'Toronto', 51, 2),       -- Ontario, CA
+(12, 'Montreal', 52, 2),      -- Quebec, CA
+(13, 'Vancouver', 53, 2),     -- BC, CA
+(14, 'Mexico City', 54, 3),   -- Ciudad de México, MX
+(15, 'Guadalajara', 55, 3),   -- Jalisco, MX
+(16, 'Monterrey', 56, 3),     -- Nuevo León, MX
+(17, 'Dallas', 43, 1),        -- TX, US
+(18, 'San Francisco', 5, 1),  -- CA, US
+(19, 'Orlando', 9, 1),        -- FL, US
+(20, 'Las Vegas', 28, 1);     -- NV, US
 
 -- Contact types
 INSERT INTO contact_types (contact_type_id, type_name)
@@ -101,15 +106,6 @@ VALUES
   (2, 'REGULAR_EMPLOYEE', 'Standard employee role')
 ON DUPLICATE KEY UPDATE role_name = VALUES(role_name);
 
--- Admin user (username: admin, default password and salt)
--- Default password hash and salt (replace with real hashed values in production)
-INSERT INTO users (user_id, username, password_hash, password_salt, is_active)
-VALUES (1, 'admin', UNHEX('70617373776F7264'), UNHEX('73616C74'), 1)
-ON DUPLICATE KEY UPDATE username = VALUES(username);
-
-INSERT INTO user_roles (user_id, role_id)
-VALUES (1, 1)
-ON DUPLICATE KEY UPDATE user_id = VALUES(user_id);
 
 -- ============================================================
 -- ORGANIZATIONAL STRUCTURE
@@ -206,6 +202,7 @@ ON DUPLICATE KEY UPDATE fname = VALUES(fname);
 
 INSERT INTO users (user_id, username, password_hash, password_salt, is_active)
 VALUES
+  (1, 'admin', UNHEX('70617373776F7264'), UNHEX('73616C74'), 1),
   (2, 'aanderson', UNHEX('70617373776F7264'), UNHEX('73616C74'), 1),
   (3, 'bbrown', UNHEX('70617373776F7264'), UNHEX('73616C74'), 1),
   (4, 'cchen', UNHEX('70617373776F7264'), UNHEX('73616C74'), 1),
@@ -271,7 +268,7 @@ ON DUPLICATE KEY UPDATE user_id = VALUES(user_id);
 -- Assign all employees to REGULAR_EMPLOYEE role
 INSERT INTO user_roles (user_id, role_id)
 VALUES
-  (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (9, 2), (10, 2),
+  (1,1), (2, 2), (3, 2), (4, 2), (5, 2), (6, 2), (7, 2), (8, 2), (9, 2), (10, 2),
   (11, 2), (12, 2), (13, 2), (14, 2), (15, 2), (16, 2), (17, 2), (18, 2), (19, 2), (20, 2),
   (21, 2), (22, 2), (23, 2), (24, 2), (25, 2), (26, 2), (27, 2), (28, 2), (29, 2), (30, 2),
   (31, 2), (32, 2), (33, 2), (34, 2), (35, 2), (36, 2), (37, 2), (38, 2), (39, 2), (40, 2),
@@ -285,56 +282,56 @@ ON DUPLICATE KEY UPDATE user_id = VALUES(user_id);
 
 INSERT INTO employee_contact (contact_id, empid, contact_type_id, contact_value, is_primary)
 VALUES
-  (1, 1, 1, 'alice.anderson@example.com', 1), (2, 1, 2, '+1-415-555-0001', 0),
-  (3, 2, 1, 'bob.brown@example.com', 1), (4, 2, 2, '+1-415-555-0002', 0),
-  (5, 3, 1, 'carol.chen@example.com', 1), (6, 3, 2, '+1-415-555-0003', 0),
-  (7, 4, 1, 'david.davis@example.com', 1), (8, 4, 2, '+1-415-555-0004', 0),
-  (9, 5, 1, 'emma.evans@example.com', 1), (10, 5, 2, '+1-415-555-0005', 0),
-  (11, 6, 1, 'frank.foster@example.com', 1), (12, 6, 2, '+1-415-555-0006', 0),
-  (13, 7, 1, 'grace.garcia@example.com', 1), (14, 7, 2, '+1-415-555-0007', 0),
-  (15, 8, 1, 'henry.harris@example.com', 1), (16, 8, 2, '+1-415-555-0008', 0),
-  (17, 9, 1, 'iris.ivanova@example.com', 1), (18, 9, 2, '+1-415-555-0009', 0),
-  (19, 10, 1, 'james.jones@example.com', 1), (20, 10, 2, '+1-415-555-0010', 0),
-  (21, 11, 1, 'karen.king@example.com', 1), (22, 11, 2, '+1-415-555-0011', 0),
-  (23, 12, 1, 'leo.lee@example.com', 1), (24, 12, 2, '+1-415-555-0012', 0),
-  (25, 13, 1, 'mia.martinez@example.com', 1), (26, 13, 2, '+1-415-555-0013', 0),
-  (27, 14, 1, 'nathan.nelson@example.com', 1), (28, 14, 2, '+1-415-555-0014', 0),
-  (29, 15, 1, 'olivia.oconnor@example.com', 1), (30, 15, 2, '+1-415-555-0015', 0),
-  (31, 16, 1, 'peter.patel@example.com', 1), (32, 16, 2, '+1-415-555-0016', 0),
-  (33, 17, 1, 'quinn.quinn@example.com', 1), (34, 17, 2, '+1-415-555-0017', 0),
-  (35, 18, 1, 'rachel.robinson@example.com', 1), (36, 18, 2, '+1-415-555-0018', 0),
-  (37, 19, 1, 'samuel.smith@example.com', 1), (38, 19, 2, '+1-415-555-0019', 0),
-  (39, 20, 1, 'tina.taylor@example.com', 1), (40, 20, 2, '+1-415-555-0020', 0),
-  (41, 21, 1, 'ulrich.underwood@example.com', 1), (42, 21, 2, '+1-415-555-0021', 0),
-  (43, 22, 1, 'victoria.vaughn@example.com', 1), (44, 22, 2, '+1-415-555-0022', 0),
-  (45, 23, 1, 'william.wang@example.com', 1), (46, 23, 2, '+1-415-555-0023', 0),
-  (47, 24, 1, 'ximena.xavier@example.com', 1), (48, 24, 2, '+1-415-555-0024', 0),
-  (49, 25, 1, 'yara.young@example.com', 1), (50, 25, 2, '+1-415-555-0025', 0),
-  (51, 26, 1, 'zara.zhao@example.com', 1), (52, 26, 2, '+1-415-555-0026', 0),
-  (53, 27, 1, 'adrian.adams@example.com', 1), (54, 27, 2, '+1-415-555-0027', 0),
-  (55, 28, 1, 'bailey.baker@example.com', 1), (56, 28, 2, '+1-415-555-0028', 0),
-  (57, 29, 1, 'cameron.campbell@example.com', 1), (58, 29, 2, '+1-415-555-0029', 0),
-  (59, 30, 1, 'daisy.davidson@example.com', 1), (60, 30, 2, '+1-415-555-0030', 0),
-  (61, 31, 1, 'ethan.edwards@example.com', 1), (62, 31, 2, '+1-415-555-0031', 0),
-  (63, 32, 1, 'felicity.fisher@example.com', 1), (64, 32, 2, '+1-415-555-0032', 0),
-  (65, 33, 1, 'gregory.gordon@example.com', 1), (66, 33, 2, '+1-415-555-0033', 0),
-  (67, 34, 1, 'hannah.hammond@example.com', 1), (68, 34, 2, '+1-415-555-0034', 0),
-  (69, 35, 1, 'isaac.ingram@example.com', 1), (70, 35, 2, '+1-415-555-0035', 0),
-  (71, 36, 1, 'jessica.jenkins@example.com', 1), (72, 36, 2, '+1-415-555-0036', 0),
-  (73, 37, 1, 'kevin.knight@example.com', 1), (74, 37, 2, '+1-415-555-0037', 0),
-  (75, 38, 1, 'laura.lewis@example.com', 1), (76, 38, 2, '+1-415-555-0038', 0),
-  (77, 39, 1, 'mason.miller@example.com', 1), (78, 39, 2, '+1-415-555-0039', 0),
-  (79, 40, 1, 'natalie.newman@example.com', 1), (80, 40, 2, '+1-415-555-0040', 0),
-  (81, 41, 1, 'owen.owen@example.com', 1), (82, 41, 2, '+1-415-555-0041', 0),
-  (83, 42, 1, 'piper.parker@example.com', 1), (84, 42, 2, '+1-415-555-0042', 0),
-  (85, 43, 1, 'quinton.reeves@example.com', 1), (86, 43, 2, '+1-415-555-0043', 0),
-  (87, 44, 1, 'rosa.roberts@example.com', 1), (88, 44, 2, '+1-415-555-0044', 0),
-  (89, 45, 1, 'samuel.sanders@example.com', 1), (90, 45, 2, '+1-415-555-0045', 0),
-  (91, 46, 1, 'tanya.thomas@example.com', 1), (92, 46, 2, '+1-415-555-0046', 0),
-  (93, 47, 1, 'urban.usher@example.com', 1), (94, 47, 2, '+1-415-555-0047', 0),
-  (95, 48, 1, 'venus.vickers@example.com', 1), (96, 48, 2, '+1-415-555-0048', 0),
-  (97, 49, 1, 'wallace.wheeler@example.com', 1), (98, 49, 2, '+1-415-555-0049', 0),
-  (99, 50, 1, 'xenia.york@example.com', 1), (100, 50, 2, '+1-415-555-0050', 0)
+  (1, 1, 1, 'alice.anderson@example.com', 1), (2, 1, 2, '+1-415-555-0001', 1),
+  (3, 2, 1, 'bob.brown@example.com', 1), (4, 2, 2, '+1-415-555-0002', 1),
+  (5, 3, 1, 'carol.chen@example.com', 1), (6, 3, 2, '+1-415-555-0003', 1),
+  (7, 4, 1, 'david.davis@example.com', 1), (8, 4, 2, '+1-415-555-0004', 1),
+  (9, 5, 1, 'emma.evans@example.com', 1), (10, 5, 2, '+1-415-555-0005', 1),
+  (11, 6, 1, 'frank.foster@example.com', 1), (12, 6, 2, '+1-415-555-0006', 1),
+  (13, 7, 1, 'grace.garcia@example.com', 1), (14, 7, 2, '+1-415-555-0007', 1),
+  (15, 8, 1, 'henry.harris@example.com', 1), (16, 8, 2, '+1-415-555-0008', 1),
+  (17, 9, 1, 'iris.ivanova@example.com', 1), (18, 9, 2, '+1-415-555-0009', 1),
+  (19, 10, 1, 'james.jones@example.com', 1), (20, 10, 2, '+1-415-555-0010', 1),
+  (21, 11, 1, 'karen.king@example.com', 1), (22, 11, 2, '+1-415-555-0011', 1),
+  (23, 12, 1, 'leo.lee@example.com', 1), (24, 12, 2, '+1-415-555-0012', 1),
+  (25, 13, 1, 'mia.martinez@example.com', 1), (26, 13, 2, '+1-415-555-0013', 1),
+  (27, 14, 1, 'nathan.nelson@example.com', 1), (28, 14, 2, '+1-415-555-0014', 1),
+  (29, 15, 1, 'olivia.oconnor@example.com', 1), (30, 15, 2, '+1-415-555-0015', 1),
+  (31, 16, 1, 'peter.patel@example.com', 1), (32, 16, 2, '+1-415-555-0016', 1),
+  (33, 17, 1, 'quinn.quinn@example.com', 1), (34, 17, 2, '+1-415-555-0017', 1),
+  (35, 18, 1, 'rachel.robinson@example.com', 1), (36, 18, 2, '+1-415-555-0018', 1),
+  (37, 19, 1, 'samuel.smith@example.com', 1), (38, 19, 2, '+1-415-555-0019', 1),
+  (39, 20, 1, 'tina.taylor@example.com', 1), (40, 20, 2, '+1-415-555-0020', 1),
+  (41, 21, 1, 'ulrich.underwood@example.com', 1), (42, 21, 2, '+1-415-555-0021', 1),
+  (43, 22, 1, 'victoria.vaughn@example.com', 1), (44, 22, 2, '+1-415-555-0022', 1),
+  (45, 23, 1, 'william.wang@example.com', 1), (46, 23, 2, '+1-415-555-0023', 1),
+  (47, 24, 1, 'ximena.xavier@example.com', 1), (48, 24, 2, '+1-415-555-0024', 1),
+  (49, 25, 1, 'yara.young@example.com', 1), (50, 25, 2, '+1-415-555-0025', 1),
+  (51, 26, 1, 'zara.zhao@example.com', 1), (52, 26, 2, '+1-415-555-0026', 1),
+  (53, 27, 1, 'adrian.adams@example.com', 1), (54, 27, 2, '+1-415-555-0027', 1),
+  (55, 28, 1, 'bailey.baker@example.com', 1), (56, 28, 2, '+1-415-555-0028', 1),
+  (57, 29, 1, 'cameron.campbell@example.com', 1), (58, 29, 2, '+1-415-555-0029', 1),
+  (59, 30, 1, 'daisy.davidson@example.com', 1), (60, 30, 2, '+1-415-555-0030', 1),
+  (61, 31, 1, 'ethan.edwards@example.com', 1), (62, 31, 2, '+1-415-555-0031', 1),
+  (63, 32, 1, 'felicity.fisher@example.com', 1), (64, 32, 2, '+1-415-555-0032', 1),
+  (65, 33, 1, 'gregory.gordon@example.com', 1), (66, 33, 2, '+1-415-555-0033', 1),
+  (67, 34, 1, 'hannah.hammond@example.com', 1), (68, 34, 2, '+1-415-555-0034', 1),
+  (69, 35, 1, 'isaac.ingram@example.com', 1), (70, 35, 2, '+1-415-555-0035', 1),
+  (71, 36, 1, 'jessica.jenkins@example.com', 1), (72, 36, 2, '+1-415-555-0036', 1),
+  (73, 37, 1, 'kevin.knight@example.com', 1), (74, 37, 2, '+1-415-555-0037', 1),
+  (75, 38, 1, 'laura.lewis@example.com', 1), (76, 38, 2, '+1-415-555-0038', 1),
+  (77, 39, 1, 'mason.miller@example.com', 1), (78, 39, 2, '+1-415-555-0039', 1),
+  (79, 40, 1, 'natalie.newman@example.com', 1), (80, 40, 2, '+1-415-555-0040', 1),
+  (81, 41, 1, 'owen.owen@example.com', 1), (82, 41, 2, '+1-415-555-0041', 1),
+  (83, 42, 1, 'piper.parker@example.com', 1), (84, 42, 2, '+1-415-555-0042', 1),
+  (85, 43, 1, 'quinton.reeves@example.com', 1), (86, 43, 2, '+1-415-555-0043', 1),
+  (87, 44, 1, 'rosa.roberts@example.com', 1), (88, 44, 2, '+1-415-555-0044', 1),
+  (89, 45, 1, 'samuel.sanders@example.com', 1), (90, 45, 2, '+1-415-555-0045', 1),
+  (91, 46, 1, 'tanya.thomas@example.com', 1), (92, 46, 2, '+1-415-555-0046', 1),
+  (93, 47, 1, 'urban.usher@example.com', 1), (94, 47, 2, '+1-415-555-0047', 1),
+  (95, 48, 1, 'venus.vickers@example.com', 1), (96, 48, 2, '+1-415-555-0048', 1),
+  (97, 49, 1, 'wallace.wheeler@example.com', 1), (98, 49, 2, '+1-415-555-0049', 1),
+  (99, 50, 1, 'xenia.york@example.com', 1), (100, 50, 2, '+1-415-555-0050', 1)
 ON DUPLICATE KEY UPDATE contact_value = VALUES(contact_value);
 
 -- ============================================================
@@ -430,78 +427,9 @@ VALUES
 ON DUPLICATE KEY UPDATE effective_start = VALUES(effective_start);
 
 -- ============================================================
--- End of comprehensive seed data
+-- Additional seed data for payroll and audit logs
 -- ============================================================
 
-SELECT 'Comprehensive seed data loaded successfully.' AS message;
-
-INSERT INTO countries (countryid, country_abbreviation, country_name)
-VALUES (1, 'US', 'United States')
-ON DUPLICATE KEY UPDATE country_name = VALUES(country_name);
-
-INSERT INTO states (stateid, state_abbreviation, state_name)
-VALUES (1, 'CA', 'California')
-ON DUPLICATE KEY UPDATE state_name = VALUES(state_name);
-
-INSERT INTO cities (cityid, city_name, stateid, countryid)
-VALUES (1, 'San Francisco', 1, 1)
-ON DUPLICATE KEY UPDATE city_name = VALUES(city_name);
-
-INSERT INTO contact_types (contact_type_id, type_name)
-VALUES (1, 'EMAIL'), (2, 'PHONE'), (3, 'LINKEDIN')
-ON DUPLICATE KEY UPDATE type_name = VALUES(type_name);
-
--- Security / RBAC seed
-INSERT INTO roles (role_id, role_name, description)
-VALUES (1, 'HR_ADMIN', 'HR administrators'), (2, 'REGULAR_EMPLOYEE', 'Standard employee role')
-ON DUPLICATE KEY UPDATE role_name = VALUES(role_name);
--- Note: granular permissions and role_permissions mapping removed.
--- Role assignments are seeded below using `user_roles` only.
-
--- Admin user (dummy password hex for 'password')
-INSERT INTO users (user_id, username, password_hash, password_salt, is_active)
-VALUES (1, 'admin', UNHEX('70617373776F7264'), UNHEX('73616C74'), 1)
-ON DUPLICATE KEY UPDATE username = VALUES(username);
-
-INSERT INTO user_roles (user_id, role_id)
-VALUES (1,1)
-ON DUPLICATE KEY UPDATE user_id = VALUES(user_id);
-
--- Divisions and job titles
-INSERT INTO divisions (divid, name, description, cityid, address_line1, address_line2, stateid, countryid, zip_code, is_active)
-VALUES (1, 'Engineering', 'Engineering division responsible for product development', 1, '100 Market St', NULL, 1, 1, '94103', 1)
-ON DUPLICATE KEY UPDATE name = VALUES(name);
-
-INSERT INTO job_titles (job_title_id, job_title, description)
-VALUES (1, 'Software Engineer', 'Designs, develops, and maintains software systems')
-ON DUPLICATE KEY UPDATE job_title = VALUES(job_title);
-
--- (Removed duplicate single-employee insert that referenced employment_type_id)
-
--- Link user to employee for accountability
-INSERT INTO user_employee_link (user_id, empid)
-VALUES (1,1)
-ON DUPLICATE KEY UPDATE user_id = VALUES(user_id);
-
--- Employee contacts
-INSERT INTO employee_contact (contact_id, empid, contact_type_id, contact_value, is_primary)
-VALUES (1, 1, 1, 'alice.smith@example.com', 1),
-       (2, 1, 2, '+1-415-555-0100', 0)
-ON DUPLICATE KEY UPDATE contact_value = VALUES(contact_value);
-
--- Employee demographic
-INSERT INTO employee_demographic (empid, gender, race, dob)
-VALUES (1, 'Female', 'Not Specified', '1990-01-01')
-ON DUPLICATE KEY UPDATE dob = VALUES(dob);
-
--- Org assignments and job title history
-INSERT INTO employee_division (empid, divid, effective_start, effective_end)
-VALUES (1, 1, '2020-01-01', NULL)
-ON DUPLICATE KEY UPDATE effective_start = VALUES(effective_start);
-
-INSERT INTO employee_job_title (empid, job_title_id, effective_start, effective_end)
-VALUES (1, 1, '2020-01-01', NULL)
-ON DUPLICATE KEY UPDATE effective_start = VALUES(effective_start);
 
 -- Payroll run and entry
 INSERT INTO payroll_runs (payroll_run_id, run_year, run_month, run_date, description)
