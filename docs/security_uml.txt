@@ -17,14 +17,16 @@
 |         void                      |
 +-----------------------------------+
 
-+-----------------------------------+
-|        <<class>>                  |
-|     AuthorizationService          |
-+-----------------------------------+
-| + hasRole(user:User, role:String):boolean |
-| + isOwner(user:User, resourceId:int):boolean |
-| + canAccess(user:User, permission:String):boolean |
-+-----------------------------------+
++---------------------------------------------------+
+|            com.companyz.ems.security              |
++---------------------------------------------------+
+|                AuthorizationService               |
++---------------------------------------------------+
+| + requireAdmin(ctx: SessionContext): void         |
+| + requireSelf(ctx: SessionContext, employeeId:int):void |
+| + requireSelfOrAdmin(ctx: SessionContext, employeeId:int):void |
+| + getSessionEmployeeId(ctx: SessionContext): int  |
++---------------------------------------------------+
 
 +-----------------------------------+
 |           <<class>>               |
