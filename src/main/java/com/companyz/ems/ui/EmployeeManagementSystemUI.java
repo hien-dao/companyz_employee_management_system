@@ -1,37 +1,52 @@
 package com.companyz.ems.ui;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import com.companyz.ems.model.employee.Employee;
+import com.companyz.ems.security.SessionContext;
+import com.companyz.ems.services.EmployeeService;
+import com.companyz.ems.services.EmployeeServiceImpl;
+import com.companyz.ems.services.ReportService;
+import com.companyz.ems.services.ReportServiceImpl;
+import com.companyz.ems.services.UserService;
+import com.companyz.ems.services.UserServiceImpl;
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import com.companyz.ems.model.employee.Employee;
-import com.companyz.ems.security.SessionContext;
-import com.companyz.ems.services.UserService;
-import com.companyz.ems.services.UserServiceImpl;
-import com.companyz.ems.services.EmployeeService;
-import com.companyz.ems.services.EmployeeServiceImpl;
-import com.companyz.ems.services.ReportService;
-import com.companyz.ems.services.ReportServiceImpl;
-
-import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
-
 /**
  * Main JavaFX GUI for Employee Management System.
- * Uses only features that are currently implemented in the DAO layer.
+ * Role-aware UI: admin vs regular employee.
  */
 public class EmployeeManagementSystemUI extends Application {
     private Stage primaryStage;
     private SessionContext currentSession;
-    private String currentUsername; // Store username separately since SessionContext doesn't have getUsername()
+    private String currentUsername; // SessionContext doesn't expose username
     
     // Service instances
     private UserService userService;
@@ -138,17 +153,17 @@ public class EmployeeManagementSystemUI extends Application {
         MenuBar menuBar = createMenuBar();
         root.setTop(menuBar);
 
-        // Main content with tabs
+        // Main content with tabs (role-aware)
         TabPane tabPane = new TabPane();
         tabPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
-        tabPane.getTabs().addAll(
-                createDashboardTab(),
-                createEmployeesTab(),
-                createPayrollTab(),
-                createReportsTab(),
-                createUsersTab()
-        );
+        tabPane.getTabs().add(createDashboardTab());
+        tabPane.getTabs().add(createPayrollTab());
+        tabPane.getTabs().add(createReportsTab());
+        if (isAdmin()) {
+            tabPane.getTabs().add(createEmployeesTab());
+            tabPane.getTabs().add(createUsersTab());
+        }
 
         root.setCenter(tabPane);
 
@@ -178,6 +193,7 @@ public class EmployeeManagementSystemUI extends Application {
         MenuItem logoutItem = new MenuItem("Logout");
         logoutItem.setOnAction(e -> {
             currentSession = null;
+            currentUsername = null;
             showLoginScreen();
         });
         MenuItem exitItem = new MenuItem("Exit");
@@ -194,7 +210,7 @@ public class EmployeeManagementSystemUI extends Application {
     }
 
     /**
-     * Create dashboard tab
+     * Create dashboard tab (role-aware)
      */
     private Tab createDashboardTab() {
         VBox vbox = new VBox(15);
@@ -209,13 +225,28 @@ public class EmployeeManagementSystemUI extends Application {
         Label statsTitle = new Label("System Statistics");
         statsTitle.setStyle("-fx-font-size: 14; -fx-font-weight: bold;");
 
-        List<Employee> allEmployees = employeeService.getAllEmployees(currentSession);
-        Label empCountLabel = new Label("Total Employees: " + allEmployees.size());
-
         Label currentUserLabel = new Label("Current User: " + currentUsername);
         Label roleLabel = new Label("Role: " + currentSession.getRole());
 
-        statsBox.getChildren().addAll(statsTitle, empCountLabel, currentUserLabel, roleLabel);
+        // Only admins can fetch all employees
+        if (isAdmin()) {
+            try {
+                List<Employee> allEmployees = employeeService.getAllEmployees(currentSession);
+                Label empCountLabel = new Label("Total Employees: " + allEmployees.size());
+                statsBox.getChildren().addAll(statsTitle, empCountLabel, currentUserLabel, roleLabel);
+            } catch (Exception ex) {
+                // If something fails, don’t crash UI
+                Label error = new Label("Error loading admin stats: " + ex.getMessage());
+                error.setStyle("-fx-text-fill: red;");
+                statsBox.getChildren().addAll(statsTitle, error, currentUserLabel, roleLabel);
+            }
+        } else {
+            // Employee-specific dashboard (no admin calls)
+            Label hint = new Label("Welcome! Use the Payroll tab to view your payroll history.");
+            hint.setStyle("-fx-font-size: 12; -fx-text-fill: #666;");
+            statsBox.getChildren().addAll(statsTitle, hint, currentUserLabel, roleLabel);
+        }
+
         vbox.getChildren().addAll(title, statsBox);
 
         Tab tab = new Tab("Dashboard", vbox);
@@ -224,7 +255,7 @@ public class EmployeeManagementSystemUI extends Application {
     }
 
     /**
-     * Create employees management tab
+     * Create employees management tab (admin-only)
      */
     private Tab createEmployeesTab() {
         VBox vbox = new VBox(10);
@@ -232,6 +263,15 @@ public class EmployeeManagementSystemUI extends Application {
 
         Label title = new Label("Employee Management");
         title.setStyle("-fx-font-size: 18; -fx-font-weight: bold;");
+
+        // Guard: if not admin, show info-only content (tab is added only for admin, but be safe)
+        if (!isAdmin()) {
+            Label info = new Label("You do not have permission to view this section.");
+            vbox.getChildren().addAll(title, info);
+            Tab tab = new Tab("Employees", vbox);
+            tab.setClosable(false);
+            return tab;
+        }
 
         // Search box
         HBox searchBox = new HBox(10);
@@ -280,6 +320,10 @@ public class EmployeeManagementSystemUI extends Application {
         deleteButton.setStyle("-fx-padding: 8; -fx-text-fill: white; -fx-background-color: #f44336;");
 
         deleteButton.setOnAction(e -> {
+            if (!isAdmin()) {
+                showError("Admin privileges required");
+                return;
+            }
             Employee selected = employeeTable.getSelectionModel().getSelectedItem();
             if (selected != null) {
                 Alert confirm = new Alert(Alert.AlertType.CONFIRMATION, "Delete this employee?");
@@ -297,6 +341,10 @@ public class EmployeeManagementSystemUI extends Application {
         });
 
         searchButton.setOnAction(e -> {
+            if (!isAdmin()) {
+                showError("Admin privileges required");
+                return;
+            }
             String firstName = searchFirstName.getText().trim();
             String lastName = searchLastName.getText().trim();
             
@@ -314,6 +362,10 @@ public class EmployeeManagementSystemUI extends Application {
         });
 
         viewAllButton.setOnAction(e -> {
+            if (!isAdmin()) {
+                showError("Admin privileges required");
+                return;
+            }
             employeeTable.getItems().clear();
             employeeTable.getItems().addAll(employeeService.getAllEmployees(currentSession));
         });
@@ -367,7 +419,7 @@ public class EmployeeManagementSystemUI extends Application {
     }
 
     /**
-     * Create reports tab
+     * Create reports tab (mixed: some admin-only)
      */
     private Tab createReportsTab() {
         VBox vbox = new VBox(10);
@@ -382,7 +434,7 @@ public class EmployeeManagementSystemUI extends Application {
         Label reportTitle = new Label("Available Reports");
         reportTitle.setStyle("-fx-font-size: 14; -fx-font-weight: bold;");
 
-        // Employee Hire Report
+        // Employee Hire Report (admin-only)
         HBox hireReportBox = new HBox(10);
         hireReportBox.setAlignment(Pos.CENTER_LEFT);
         Label hireLabel = new Label("Employee Hire Date Range Report:");
@@ -391,6 +443,10 @@ public class EmployeeManagementSystemUI extends Application {
         Button hireReportBtn = new Button("Generate");
         hireReportBtn.setStyle("-fx-padding: 8;");
         hireReportBtn.setOnAction(e -> {
+            if (!isAdmin()) {
+                showError("Admin privileges required");
+                return;
+            }
             if (startDatePicker.getValue() != null && endDatePicker.getValue() != null) {
                 try {
                     LocalDate startDate = startDatePicker.getValue();
@@ -408,7 +464,7 @@ public class EmployeeManagementSystemUI extends Application {
         });
         hireReportBox.getChildren().addAll(hireLabel, startDatePicker, endDatePicker, hireReportBtn);
 
-        // Job Title Report
+        // Job Title Report (admin-only)
         HBox jobTitleBox = new HBox(10);
         jobTitleBox.setAlignment(Pos.CENTER_LEFT);
         Label jobLabel = new Label("Job Title Monthly Report:");
@@ -420,6 +476,10 @@ public class EmployeeManagementSystemUI extends Application {
         Button jobReportBtn = new Button("Generate");
         jobReportBtn.setStyle("-fx-padding: 8;");
         jobReportBtn.setOnAction(e -> {
+            if (!isAdmin()) {
+                showError("Admin privileges required");
+                return;
+            }
             if (!jobTitleField.getText().isEmpty()) {
                 try {
                     var report = reportService.getMonthlyPayByJobTitle(currentSession, 
@@ -443,7 +503,7 @@ public class EmployeeManagementSystemUI extends Application {
     }
 
     /**
-     * Create users management tab
+     * Create users management tab (admin-only)
      */
     private Tab createUsersTab() {
         VBox vbox = new VBox(10);
@@ -451,6 +511,14 @@ public class EmployeeManagementSystemUI extends Application {
 
         Label title = new Label("User Management");
         title.setStyle("-fx-font-size: 18; -fx-font-weight: bold;");
+
+        if (!isAdmin()) {
+            Label info = new Label("You do not have permission to view this section.");
+            vbox.getChildren().addAll(title, info);
+            Tab tab = new Tab("Users", vbox);
+            tab.setClosable(false);
+            return tab;
+        }
 
         // Note about role management
         VBox rolesBox = new VBox(10);
@@ -515,6 +583,11 @@ public class EmployeeManagementSystemUI extends Application {
         alert.setTitle("Error");
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private boolean isAdmin() {
+        return currentSession != null && currentSession.getRole() != null
+                && "ADMIN".equalsIgnoreCase(currentSession.getRole());
     }
 
     public static void main(String[] args) {
