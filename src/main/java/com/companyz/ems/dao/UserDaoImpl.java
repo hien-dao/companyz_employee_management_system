@@ -156,9 +156,10 @@ public class UserDaoImpl extends AbstractDao implements UserDao {
         user.setRoles(getUserRoles(userId));
 
         // Attach employee link (store employee id)
-        String empSql = "SELECT e.empid, e.email, e.phone_number, e.salary " +
-                        "FROM employees e JOIN user_employee_link uel ON e.empid = uel.empid " +
-                        "WHERE uel.user_id = ?";
+        String empSql = "SELECT e.empid " +
+                "FROM employees e " +
+                "JOIN user_employee_link uel ON e.empid = uel.empid " +
+                "WHERE uel.user_id = ?";
         try (PreparedStatement empStmt = prepareStatement(conn, empSql, userId);
              ResultSet empRs = empStmt.executeQuery()) {
             if (empRs.next()) {
