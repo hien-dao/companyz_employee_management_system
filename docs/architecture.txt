@@ -1,12 +1,5 @@
 UI Layer (JavaFX Controllers)
- ├── EmployeeController
- │    └── calls EmployeeService
- ├── PayrollController
- │    └── calls PayrollService
- ├── ReportController
- │    └── calls ReportService
- └── UserController
-      └── calls UserService
+ ├── EmployeeManagementSystemUI
        
 Service Layer (Business Logic)
  ├── EmployeeService
