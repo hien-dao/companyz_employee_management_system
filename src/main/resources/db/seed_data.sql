@@ -111,10 +111,11 @@ VALUES
 -- =========================
 -- DEMOGRAPHIC
 -- =========================
-INSERT INTO employeedata.employee_demographic (empid, gender, race, dob, address_line1, address_line2, city_id, state_id, country_id)
+INSERT INTO employeedata.employee_demographic 
+(empid, gender, race, dob, address_line1, address_line2, city_id, state_id, country_id, zip_code)
 VALUES
-(201, 'Male', 'White', '1990-05-15', '123 Main St', '', 1, 1, 1),
-(202, 'Female', 'Asian', '1992-08-20', '456 Oak Ave', 'Apt 2', 1, 1, 1);
+(201, 'Male', 'White', '1990-05-15', '123 Main St', '', 1, 1, 1, '30058'),
+(202, 'Female', 'Asian', '1992-08-20', '456 Oak Ave', 'Apt 2', 1, 1, 1, '30059');
 
 -- =========================
 -- DIVISIONS

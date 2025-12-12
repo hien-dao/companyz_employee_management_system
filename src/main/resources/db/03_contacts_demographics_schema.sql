@@ -37,6 +37,7 @@ CREATE TABLE employee_demographic (
   city_id INT DEFAULT NULL,                    -- FK to cities
   state_id INT DEFAULT NULL,                   -- FK to states
   country_id INT DEFAULT NULL,                 -- FK to countries
+  zip_code VARCHAR(15) DEFAULT NULL,           -- postal code for employee address
   FOREIGN KEY (empid) REFERENCES employees(empid) ON DELETE CASCADE,
   FOREIGN KEY (city_id) REFERENCES cities(cityid) ON DELETE SET NULL,
   FOREIGN KEY (state_id) REFERENCES states(stateid) ON DELETE SET NULL,
