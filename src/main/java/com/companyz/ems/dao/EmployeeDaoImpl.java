@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,7 +30,7 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
 
     private static final String INSERT_EMPLOYEE =
         "INSERT INTO employees (fname, lname, salary, ssn_last4, ssn_hash, ssn_enc, ssn_iv, created_at) " +
-        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
+        "VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
 
     private static final String UPDATE_EMPLOYEE =
         "UPDATE employees SET fname=?, lname=?, salary=?, updated_at=NOW() WHERE empid=?";
@@ -131,14 +132,15 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
         try (Connection conn = getConnection();
             PreparedStatement stmt = conn.prepareStatement(INSERT_EMPLOYEE, Statement.RETURN_GENERATED_KEYS)) {
 
-            // employees table only stores core fields
+            // Bind core fields
             stmt.setString(1, employee.getFirstName());
             stmt.setString(2, employee.getLastName());
             stmt.setDouble(3, employee instanceof FullTimeEmployee ? ((FullTimeEmployee) employee).getSalary() : 0.0);
             stmt.setString(4, employee.getSsnLast4());
-            stmt.setString(5, employee.getSsnHash());
+            stmt.setBytes(5, Base64.getDecoder().decode(employee.getSsnHash())); // decode string back to bytes
             stmt.setBytes(6, employee.getSsnEnc());
             stmt.setBytes(7, employee.getSsnIv());
+
             stmt.executeUpdate();
 
             try (ResultSet keys = stmt.getGeneratedKeys()) {
@@ -148,19 +150,20 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
             }
 
             // Persist normalized data
-            EmployeePersistenceHelper.saveEmploymentType(conn, employee);   // TYPE (full-time, part-time)
-            EmployeePersistenceHelper.saveStatus(conn, employee);    // STATUS (active, on leave, etc.)
+            EmployeePersistenceHelper.saveEmploymentType(conn, employee);
+            EmployeePersistenceHelper.saveStatus(conn, employee);
             EmployeePersistenceHelper.saveContacts(conn, employee);
             EmployeePersistenceHelper.saveDemographics(conn, employee);
             EmployeePersistenceHelper.saveDivision(conn, employee);
             EmployeePersistenceHelper.saveJobTitle(conn, employee);
 
             return (Employee) employee;
-        } catch (SQLException e) {
+        } catch (Exception e) {
             logError(e);
             return null;
         }
     }
+
 
     @Override
     public Employee updateEmployee(BaseEmployee employee) {
@@ -297,11 +300,16 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
         emp.setLastName(rs.getString("lname"));
         emp.setSalary(rs.getDouble("salary"));
         emp.setSsnLast4(rs.getString("ssn_last4"));
-        emp.setSsnHash(rs.getString("ssn_hash"));
+
+        // Convert BINARY(32) back to a readable string if your model expects String
+        byte[] ssnHashBytes = rs.getBytes("ssn_hash");
+        emp.setSsnHash(ssnHashBytes != null ? Base64.getEncoder().encodeToString(ssnHashBytes) : null);
+
         emp.setSsnEnc(rs.getBytes("ssn_enc"));
         emp.setSsnIv(rs.getBytes("ssn_iv"));
-        emp.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
-        emp.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
+
+        // ❌ Removed created_at / updated_at mapping for now
+        // If you want later: add null-safe conversion to LocalDateTime
 
         // Load related info via helper
         emp.setContacts(EmployeePersistenceHelper.loadContacts(conn, emp.getEmpId()));
@@ -317,7 +325,9 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
         return emp;
     }
 
-    private void logError(SQLException e) {
+
+
+    private void logError(Exception e) {
         System.err.println("DAO error: " + e.getMessage());
     }
 }

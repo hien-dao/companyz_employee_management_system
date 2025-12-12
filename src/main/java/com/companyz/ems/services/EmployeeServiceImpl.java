@@ -1,6 +1,7 @@
 package com.companyz.ems.services;
 
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,31 +71,32 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public boolean createEmployee(SessionContext ctx,
-                                  String firstName,
-                                  String lastName,
-                                  String gender,
-                                  String race,
-                                  LocalDate dob,
-                                  String ssn,
-                                  String primaryEmail,
-                                  String primaryPhoneNumber,
-                                  String addressLine1,
-                                  String addressLine2,
-                                  String city,
-                                  String state,
-                                  String country,
-                                  String zipCode,
-                                  String employmentType,
-                                  String employmentStatus,
-                                  String jobTitle,
-                                  String division,
-                                  double salary,
-                                  LocalDate hireDate) {
+                                String firstName,
+                                String lastName,
+                                String gender,
+                                String race,
+                                LocalDate dob,
+                                String ssn,
+                                String primaryEmail,
+                                String primaryPhoneNumber,
+                                String addressLine1,
+                                String addressLine2,
+                                String city,
+                                String state,
+                                String country,
+                                String zipCode,
+                                String employmentType,
+                                String employmentStatus,
+                                String jobTitle,
+                                String division,
+                                double salary,
+                                LocalDate hireDate) {
         authzService.requireAdmin(ctx);
 
         try {
+            // Secure SSN handling
             String ssnLast4 = ssnEncryptor.extractLast4(ssn);
-            byte[] ssnHash = ssnEncryptor.hashSsn(ssn);
+            byte[] ssnHashBytes = ssnEncryptor.hashSsn(ssn);
             byte[] iv = ssnEncryptor.generateIv();
             byte[] ssnEnc = ssnEncryptor.encryptSsn(ssn, iv);
 
@@ -105,13 +107,14 @@ public class EmployeeServiceImpl implements EmployeeService {
             emp.setRace(race);
             emp.setDob(dob);
             emp.setSsnLast4(ssnLast4);
-            emp.setSsnHash(new String(ssnHash)); // or store as bytes depending on schema
+            emp.setSsnHash(Base64.getEncoder().encodeToString(ssnHashBytes)); // keep String in model
             emp.setSsnEnc(ssnEnc);
             emp.setSsnIv(iv);
             emp.setPrimaryEmail(primaryEmail);
             emp.setPrimaryPhoneNumber(primaryPhoneNumber);
             emp.setHireDate(hireDate);
-            // set other fields like address, divisionId, jobTitleId, etc.
+            emp.setSalary(salary);
+            // set address, division, jobTitle, etc.
 
             employeeDao.createEmployee(emp);
             return true;
@@ -119,6 +122,8 @@ public class EmployeeServiceImpl implements EmployeeService {
             return false;
         }
     }
+
+
 
     @Override
     public boolean updateEmployee(SessionContext ctx,

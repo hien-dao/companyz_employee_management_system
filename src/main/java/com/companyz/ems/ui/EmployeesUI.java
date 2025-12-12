@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.companyz.ems.model.employee.Employee;
 import com.companyz.ems.security.SessionContext;
 import com.companyz.ems.services.EmployeeService;
+import com.companyz.ems.ui.helper.EmployeeCreateDialog;
 import com.companyz.ems.utils.DialogUtil;
 import com.companyz.ems.utils.UIConstants;
 
@@ -125,6 +126,9 @@ public class EmployeesUI {
         Button updateSalaryButton = new Button("Increase Salary % (Range)");
         updateSalaryButton.setStyle(UIConstants.BUTTON_PRIMARY_STYLE);
 
+        Button createButton = new Button("Create New Employee");
+        createButton.setStyle(UIConstants.BUTTON_SUCCESS_STYLE);
+
         deleteButton.setOnAction(e -> {
             Employee selected = employeeTable.getSelectionModel().getSelectedItem();
             if (selected != null) {
@@ -209,7 +213,10 @@ public class EmployeesUI {
             }
         });
 
-        actionBox.getChildren().addAll(deleteButton, updateSalaryButton);
+        EmployeeCreateDialog createDialog = new EmployeeCreateDialog(employeeService);
+        createButton.setOnAction(e -> createDialog.show(session, employeeTable));
+
+        actionBox.getChildren().addAll(deleteButton, updateSalaryButton, createButton);
         vbox.getChildren().addAll(title, searchBox, employeeTable, actionBox);
 
         return new Tab("Employees", vbox);
