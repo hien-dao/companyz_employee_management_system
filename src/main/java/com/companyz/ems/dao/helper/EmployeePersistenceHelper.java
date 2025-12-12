@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.companyz.ems.model.Contact;
 import com.companyz.ems.model.employee.BaseEmployee;
+import com.companyz.ems.model.employee.FullTimeEmployee;
 
 /**
  * EmployeePersistenceHelper
@@ -279,5 +280,50 @@ public class EmployeePersistenceHelper {
             }
         }
         return 0;
+    }
+
+    public static void saveEmploymentType(Connection conn, BaseEmployee employee) throws SQLException {
+        String sql = "INSERT INTO employee_employment_types (empid, employment_type_id, is_active) VALUES (?, ?, 1)";
+        int typeId = employee.getEmployeeTypeId();
+        if (typeId == 0) return;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, employee.getEmpId());
+            stmt.setInt(2, typeId);
+            stmt.executeUpdate();
+        }
+    }
+
+    public static void updateEmploymentType(Connection conn, BaseEmployee employee) throws SQLException {
+        String sql = "UPDATE employee_employment_types SET employment_type_id=? WHERE empid=?";
+        int typeId = employee.getEmployeeTypeId();
+        if (typeId == 0) return;
+
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, typeId);
+            stmt.setInt(2, employee.getEmpId());
+            stmt.executeUpdate();
+        }
+    }
+
+    public static void loadEmploymentType(Connection conn, BaseEmployee employee) throws SQLException {
+        String sql = "SELECT eet.employment_type_id, et.employment_type_name " +
+                    "FROM employee_employment_types eet " +
+                    "JOIN employment_types et ON eet.employment_type_id = et.employment_type_id " +
+                    "WHERE eet.empid = ? AND eet.is_active = 1";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, employee.getEmpId());
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    int typeId = rs.getInt("employment_type_id");
+                    String typeName = rs.getString("employment_type_name");
+
+                    employee.setEmployeeTypeId(typeId);
+                    if (employee instanceof FullTimeEmployee) {
+                        ((FullTimeEmployee) employee).setEmploymentTypeString(typeName);
+                    }
+                }
+            }
+        }
     }
 }

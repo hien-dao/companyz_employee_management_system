@@ -24,15 +24,15 @@ import com.companyz.ems.model.report.EmployeeHireReport;
 public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
     // --- Core Queries ---
     private static final String SELECT_EMPLOYEE =
-        "SELECT empid, fname, lname, salary, employment_type_id, ssn_last4, ssn_hash, ssn_enc, ssn_iv, created_at, updated_at " +
+        "SELECT empid, fname, lname, salary, ssn_last4, ssn_hash, ssn_enc, ssn_iv, created_at, updated_at " +
         "FROM employees ";
 
     private static final String INSERT_EMPLOYEE =
-        "INSERT INTO employees (fname, lname, employment_type_id, salary, ssn_last4, ssn_hash, ssn_enc, ssn_iv, created_at) " +
+        "INSERT INTO employees (fname, lname, salary, ssn_last4, ssn_hash, ssn_enc, ssn_iv, created_at) " +
         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())";
 
     private static final String UPDATE_EMPLOYEE =
-        "UPDATE employees SET fname=?, lname=?, employment_type_id=?, salary=?, updated_at=NOW() WHERE empid=?";
+        "UPDATE employees SET fname=?, lname=?, salary=?, updated_at=NOW() WHERE empid=?";
 
     private static final String DELETE_EMPLOYEE =
         "DELETE FROM employees WHERE empid=?";
@@ -127,18 +127,18 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
     }
 
     @Override
-    public Employee createEmployee( BaseEmployee employee) {
+    public Employee createEmployee(BaseEmployee employee) {
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(INSERT_EMPLOYEE, Statement.RETURN_GENERATED_KEYS)) {
+            PreparedStatement stmt = conn.prepareStatement(INSERT_EMPLOYEE, Statement.RETURN_GENERATED_KEYS)) {
 
+            // employees table only stores core fields
             stmt.setString(1, employee.getFirstName());
             stmt.setString(2, employee.getLastName());
-            stmt.setInt(3, employee.getEmploymentStatusId());
-            stmt.setDouble(4, employee instanceof FullTimeEmployee ? ((FullTimeEmployee) employee).getSalary() : 0.0);
-            stmt.setString(5, employee.getSsnLast4());
-            stmt.setString(6, employee.getSsnHash());
-            stmt.setBytes(7, employee.getSsnEnc());
-            stmt.setBytes(8, employee.getSsnIv());
+            stmt.setDouble(3, employee instanceof FullTimeEmployee ? ((FullTimeEmployee) employee).getSalary() : 0.0);
+            stmt.setString(4, employee.getSsnLast4());
+            stmt.setString(5, employee.getSsnHash());
+            stmt.setBytes(6, employee.getSsnEnc());
+            stmt.setBytes(7, employee.getSsnIv());
             stmt.executeUpdate();
 
             try (ResultSet keys = stmt.getGeneratedKeys()) {
@@ -147,11 +147,13 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
                 }
             }
 
+            // Persist normalized data
+            EmployeePersistenceHelper.saveEmploymentType(conn, employee);   // TYPE (full-time, part-time)
+            EmployeePersistenceHelper.saveStatus(conn, employee);    // STATUS (active, on leave, etc.)
             EmployeePersistenceHelper.saveContacts(conn, employee);
             EmployeePersistenceHelper.saveDemographics(conn, employee);
             EmployeePersistenceHelper.saveDivision(conn, employee);
             EmployeePersistenceHelper.saveJobTitle(conn, employee);
-            EmployeePersistenceHelper.saveStatus(conn, employee);
 
             return (Employee) employee;
         } catch (SQLException e) {
@@ -163,20 +165,21 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
     @Override
     public Employee updateEmployee(BaseEmployee employee) {
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(UPDATE_EMPLOYEE)) {
+            PreparedStatement stmt = conn.prepareStatement(UPDATE_EMPLOYEE)) {
 
             stmt.setString(1, employee.getFirstName());
             stmt.setString(2, employee.getLastName());
-            stmt.setInt(3, employee.getEmploymentStatusId());
-            stmt.setDouble(4, employee instanceof FullTimeEmployee ? ((FullTimeEmployee) employee).getSalary() : 0.0);
-            stmt.setInt(5, employee.getEmpId());
+            stmt.setDouble(3, employee instanceof FullTimeEmployee ? ((FullTimeEmployee) employee).getSalary() : 0.0);
+            stmt.setInt(4, employee.getEmpId());
             stmt.executeUpdate();
 
+            // Update normalized data
+            EmployeePersistenceHelper.updateEmploymentType(conn, employee);   // TYPE
+            EmployeePersistenceHelper.updateStatus(conn, employee);    // STATUS
             EmployeePersistenceHelper.updateContacts(conn, employee);
             EmployeePersistenceHelper.updateDemographics(conn, employee);
             EmployeePersistenceHelper.updateDivision(conn, employee);
             EmployeePersistenceHelper.updateJobTitle(conn, employee);
-            EmployeePersistenceHelper.updateStatus(conn, employee);
 
             return (Employee) employee;
         } catch (SQLException e) {
@@ -184,6 +187,7 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
             return null;
         }
     }
+
 
     @Override
     public boolean deleteEmployee(int empId) {
