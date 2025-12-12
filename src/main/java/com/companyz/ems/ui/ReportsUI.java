@@ -10,13 +10,17 @@ import com.companyz.ems.services.ReportService;
 import com.companyz.ems.utils.DialogUtil;
 import com.companyz.ems.utils.UIConstants;
 
+import javafx.collections.FXCollections;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.Tab;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
@@ -31,12 +35,6 @@ public class ReportsUI {
         this.reportService = reportService;
     }
 
-    /**
-     * Build the Reports tab for HR Admin.
-     *
-     * @param session current user session
-     * @return a Tab with reporting features
-     */
     public Tab build(SessionContext session) {
         VBox vbox = new VBox(UIConstants.DEFAULT_SPACING);
         vbox.setPadding(new javafx.geometry.Insets(UIConstants.DEFAULT_PADDING));
@@ -58,13 +56,32 @@ public class ReportsUI {
         Label reportTitle = new Label("Available Admin Reports");
         reportTitle.setStyle(UIConstants.SUBTITLE_STYLE);
 
-        TextArea outputArea = new TextArea();
-        outputArea.setEditable(false);
-        outputArea.setPrefHeight(400);
+        // --- Hire Report Table ---
+        TableView<EmployeeHireReport.HireEntry> hireTable = new TableView<>();
+        hireTable.setPrefHeight(300);
 
-        // Employees hired within date range
+        TableColumn<EmployeeHireReport.HireEntry, Integer> empIdCol = new TableColumn<>("Emp ID");
+        empIdCol.setCellValueFactory(new PropertyValueFactory<>("empId"));
+
+        TableColumn<EmployeeHireReport.HireEntry, String> firstNameCol = new TableColumn<>("First Name");
+        firstNameCol.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+
+        TableColumn<EmployeeHireReport.HireEntry, String> lastNameCol = new TableColumn<>("Last Name");
+        lastNameCol.setCellValueFactory(new PropertyValueFactory<>("lastName"));
+
+        TableColumn<EmployeeHireReport.HireEntry, String> divisionCol = new TableColumn<>("Division");
+        divisionCol.setCellValueFactory(new PropertyValueFactory<>("divisionName"));
+
+        TableColumn<EmployeeHireReport.HireEntry, String> jobTitleCol = new TableColumn<>("Job Title");
+        jobTitleCol.setCellValueFactory(new PropertyValueFactory<>("jobTitleName"));
+
+        TableColumn<EmployeeHireReport.HireEntry, LocalDate> hireDateCol = new TableColumn<>("Hire Date");
+        hireDateCol.setCellValueFactory(new PropertyValueFactory<>("hireDate"));
+
+        hireTable.getColumns().addAll(empIdCol, firstNameCol, lastNameCol, divisionCol, jobTitleCol, hireDateCol);
+
         HBox hireReportBox = new HBox(UIConstants.DEFAULT_SPACING);
-        hireReportBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        hireReportBox.setAlignment(Pos.CENTER_LEFT);
         Label hireLabel = new Label("Employees hired within date range:");
         DatePicker startDatePicker = new DatePicker();
         DatePicker endDatePicker = new DatePicker();
@@ -75,10 +92,12 @@ public class ReportsUI {
                 try {
                     LocalDate startDate = startDatePicker.getValue();
                     LocalDate endDate = endDatePicker.getValue();
-                    EmployeeHireReport report = reportService.getEmployeesHiredWithinDateRange(session,
+                    EmployeeHireReport report = reportService.getEmployeesHiredWithinDateRange(
+                            session,
                             startDate.getDayOfMonth(), startDate.getMonthValue(), startDate.getYear(),
                             endDate.getDayOfMonth(), endDate.getMonthValue(), endDate.getYear());
-                    outputArea.setText(report.toString());
+
+                    hireTable.setItems(FXCollections.observableArrayList(report.getHires()));
                 } catch (Exception ex) {
                     DialogUtil.showError("Error generating hire report: " + ex.getMessage());
                 }
@@ -88,9 +107,29 @@ public class ReportsUI {
         });
         hireReportBox.getChildren().addAll(hireLabel, startDatePicker, endDatePicker, hireReportBtn);
 
-        // Job Title Monthly Pay
+        // --- Job Title Monthly Pay Table ---
+        TableView<JobTitleMonthlyPayReport> jobTitleTable = new TableView<>();
+        jobTitleTable.setPrefHeight(200);
+
+        TableColumn<JobTitleMonthlyPayReport, Integer> jtIdCol = new TableColumn<>("Job Title ID");
+        jtIdCol.setCellValueFactory(new PropertyValueFactory<>("jobTitleId"));
+
+        TableColumn<JobTitleMonthlyPayReport, String> jtNameCol = new TableColumn<>("Job Title Name");
+        jtNameCol.setCellValueFactory(new PropertyValueFactory<>("jobTitleName"));
+
+        TableColumn<JobTitleMonthlyPayReport, Integer> jtMonthCol = new TableColumn<>("Month");
+        jtMonthCol.setCellValueFactory(new PropertyValueFactory<>("month"));
+
+        TableColumn<JobTitleMonthlyPayReport, Integer> jtYearCol = new TableColumn<>("Year");
+        jtYearCol.setCellValueFactory(new PropertyValueFactory<>("year"));
+
+        TableColumn<JobTitleMonthlyPayReport, Double> jtPayCol = new TableColumn<>("Total Pay");
+        jtPayCol.setCellValueFactory(new PropertyValueFactory<>("totalPay"));
+
+        jobTitleTable.getColumns().addAll(jtIdCol, jtNameCol, jtMonthCol, jtYearCol, jtPayCol);
+
         HBox jobTitleBox = new HBox(UIConstants.DEFAULT_SPACING);
-        jobTitleBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        jobTitleBox.setAlignment(Pos.CENTER_LEFT);
         Label jobLabel = new Label("Total pay for month by Job Title:");
         TextField jobTitleField = new TextField();
         jobTitleField.setPromptText("Job Title");
@@ -101,9 +140,9 @@ public class ReportsUI {
         jobReportBtn.setOnAction(e -> {
             if (!jobTitleField.getText().isEmpty()) {
                 try {
-                    JobTitleMonthlyPayReport report = reportService.getMonthlyPayByJobTitle(session,
-                            jobTitleField.getText(), jtYearSpinner.getValue(), jtMonthSpinner.getValue());
-                    outputArea.setText(report.toString());
+                    JobTitleMonthlyPayReport report = reportService.getMonthlyPayByJobTitle(
+                            session, jobTitleField.getText(), jtYearSpinner.getValue(), jtMonthSpinner.getValue());
+                    jobTitleTable.setItems(FXCollections.observableArrayList(report));
                 } catch (Exception ex) {
                     DialogUtil.showError("Error generating job title report: " + ex.getMessage());
                 }
@@ -113,22 +152,43 @@ public class ReportsUI {
         });
         jobTitleBox.getChildren().addAll(jobLabel, jobTitleField, jtYearSpinner, jtMonthSpinner, jobReportBtn);
 
-        // Division Monthly Pay
+        // --- Division Monthly Pay Table ---
+        TableView<DivisionMonthlyPayReport> divisionTable = new TableView<>();
+        divisionTable.setPrefHeight(200);
+
+        TableColumn<DivisionMonthlyPayReport, Integer> divIdCol = new TableColumn<>("Division ID");
+        divIdCol.setCellValueFactory(new PropertyValueFactory<>("divisionId"));
+
+        TableColumn<DivisionMonthlyPayReport, String> divNameCol = new TableColumn<>("Division Name");
+        divNameCol.setCellValueFactory(new PropertyValueFactory<>("divisionName"));
+
+        TableColumn<DivisionMonthlyPayReport, Integer> divMonthCol = new TableColumn<>("Month");
+        divMonthCol.setCellValueFactory(new PropertyValueFactory<>("month"));
+
+        TableColumn<DivisionMonthlyPayReport, Integer> divYearCol = new TableColumn<>("Year");
+        divYearCol.setCellValueFactory(new PropertyValueFactory<>("year"));
+
+        TableColumn<DivisionMonthlyPayReport, Double> divPayCol = new TableColumn<>("Total Pay");
+        divPayCol.setCellValueFactory(new PropertyValueFactory<>("totalPay"));
+
+        divisionTable.getColumns().addAll(divIdCol, divNameCol, divMonthCol, divYearCol, divPayCol);
+
         HBox divisionBox = new HBox(UIConstants.DEFAULT_SPACING);
-        divisionBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        divisionBox.setAlignment(Pos.CENTER_LEFT);
         Label divLabel = new Label("Total pay for month by Division:");
         TextField divisionField = new TextField();
         divisionField.setPromptText("Division");
         Spinner<Integer> divYearSpinner = new Spinner<>(2020, 2050, LocalDate.now().getYear());
-        Spinner<Integer> divMonthSpinner = new Spinner<>(1, 12, LocalDate.now().getMonthValue());
+                Spinner<Integer> divMonthSpinner = new Spinner<>(1, 12, LocalDate.now().getMonthValue());
         Button divisionReportBtn = new Button("Generate");
         divisionReportBtn.setStyle(UIConstants.BUTTON_PRIMARY_STYLE);
         divisionReportBtn.setOnAction(e -> {
             if (!divisionField.getText().isEmpty()) {
                 try {
-                    DivisionMonthlyPayReport report = reportService.getMonthlyPayByDivision(session,
-                            divisionField.getText(), divYearSpinner.getValue(), divMonthSpinner.getValue());
-                    outputArea.setText(report.toString());
+                    DivisionMonthlyPayReport report = reportService.getMonthlyPayByDivision(
+                            session, divisionField.getText(), divYearSpinner.getValue(), divMonthSpinner.getValue());
+
+                    divisionTable.setItems(FXCollections.observableArrayList(report));
                 } catch (Exception ex) {
                     DialogUtil.showError("Error generating division report: " + ex.getMessage());
                 }
@@ -138,7 +198,11 @@ public class ReportsUI {
         });
         divisionBox.getChildren().addAll(divLabel, divisionField, divYearSpinner, divMonthSpinner, divisionReportBtn);
 
-        reportOptions.getChildren().addAll(reportTitle, hireReportBox, jobTitleBox, divisionBox, outputArea);
+        // Add all report sections to the options container
+        reportOptions.getChildren().addAll(reportTitle, hireReportBox, hireTable,
+                                           jobTitleBox, jobTitleTable,
+                                           divisionBox, divisionTable);
+
         vbox.getChildren().addAll(title, reportOptions);
 
         return new Tab("Reports", vbox);
@@ -149,4 +213,3 @@ public class ReportsUI {
                 && "HR_ADMIN".equalsIgnoreCase(session.getRole());
     }
 }
-
