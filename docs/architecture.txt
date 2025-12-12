@@ -1,5 +1,15 @@
 UI Layer (JavaFX Controllers)
- ├── EmployeeManagementSystemUI
+ ├── EmployeeManagementSystemUI   (extends Application, manages Stage/Scene, orchestrates tabs)
+ ├── LoginUI                 (builds login scene, returns SessionContext)
+ ├── DashboardUI             (builds dashboard tab, role-aware)
+ ├── ProfileUI               (employee view-only tab)
+ ├── EmployeesUI             (HR Admin CRUD tab)
+ ├── PayrollUI               (employee payroll history tab)
+ ├── ReportsUI               (HR Admin reports tab)
+ └── util
+      ├── DialogUtil              (showInfo, showError, showAbout)
+      └── UIConstants             (styles, padding, etc.)
+
        
 Service Layer (Business Logic)
  ├── EmployeeService
