@@ -1,124 +1,125 @@
-|TABLE_SCHEMA|TABLE_NAME               |COLUMN_NAME         |DATA_TYPE|CHARACTER_MAXIMUM_LENGTH|IS_NULLABLE|COLUMN_KEY|EXTRA                      |
-|------------|-------------------------|--------------------|---------|------------------------|-----------|----------|---------------------------|
-|employeedata|auth_events              |auth_event_id       |bigint   |                        |NO         |PRI       |auto_increment             |
-|employeedata|auth_events              |user_id             |int      |                        |YES        |MUL       |                           |
-|employeedata|auth_events              |event_type          |varchar  |32                      |NO         |          |                           |
-|employeedata|auth_events              |event_time          |datetime |                        |NO         |          |DEFAULT_GENERATED          |
-|employeedata|auth_events              |ip_address          |varchar  |45                      |YES        |          |                           |
-|employeedata|auth_events              |user_agent          |varchar  |255                     |YES        |          |                           |
-|employeedata|change_log               |change_id           |bigint   |                        |NO         |PRI       |auto_increment             |
-|employeedata|change_log               |table_name          |varchar  |128                     |NO         |MUL       |                           |
-|employeedata|change_log               |record_pk           |varchar  |128                     |NO         |          |                           |
-|employeedata|change_log               |operation           |enum     |6                       |NO         |          |                           |
-|employeedata|change_log               |changed_by_user_id  |int      |                        |NO         |MUL       |                           |
-|employeedata|change_log               |changed_at          |datetime |                        |NO         |          |DEFAULT_GENERATED          |
-|employeedata|change_log               |old_values          |json     |                        |YES        |          |                           |
-|employeedata|change_log               |new_values          |json     |                        |YES        |          |                           |
-|employeedata|cities                   |cityid              |int      |                        |NO         |PRI       |auto_increment             |
-|employeedata|cities                   |city_name           |varchar  |125                     |NO         |          |                           |
-|employeedata|cities                   |stateid             |int      |                        |YES        |MUL       |                           |
-|employeedata|cities                   |countryid           |int      |                        |YES        |MUL       |                           |
-|employeedata|contact_types            |contact_type_id     |int      |                        |NO         |PRI       |auto_increment             |
-|employeedata|contact_types            |type_name           |varchar  |64                      |NO         |UNI       |                           |
-|employeedata|countries                |countryid           |int      |                        |NO         |PRI       |auto_increment             |
-|employeedata|countries                |country_abbreviation|varchar  |3                       |NO         |UNI       |                           |
-|employeedata|countries                |country_name        |varchar  |125                     |NO         |          |                           |
-|employeedata|divisions                |divid               |int      |                        |NO         |PRI       |auto_increment             |
-|employeedata|divisions                |name                |varchar  |100                     |NO         |          |                           |
-|employeedata|divisions                |description         |varchar  |255                     |YES        |          |                           |
-|employeedata|divisions                |cityid              |int      |                        |NO         |MUL       |                           |
-|employeedata|divisions                |address_line1       |varchar  |100                     |NO         |          |                           |
-|employeedata|divisions                |address_line2       |varchar  |100                     |YES        |          |                           |
-|employeedata|divisions                |stateid             |int      |                        |YES        |MUL       |                           |
-|employeedata|divisions                |countryid           |int      |                        |NO         |MUL       |                           |
-|employeedata|divisions                |zip_code            |varchar  |15                      |NO         |          |                           |
-|employeedata|divisions                |is_active           |tinyint  |                        |NO         |          |                           |
-|employeedata|employee_contact         |contact_id          |int      |                        |NO         |PRI       |auto_increment             |
-|employeedata|employee_contact         |empid               |int      |                        |NO         |MUL       |                           |
-|employeedata|employee_contact         |contact_type_id     |int      |                        |NO         |MUL       |                           |
-|employeedata|employee_contact         |contact_value       |varchar  |128                     |NO         |          |                           |
-|employeedata|employee_contact         |is_primary          |tinyint  |                        |YES        |          |                           |
-|employeedata|employee_demographic     |empid               |int      |                        |NO         |PRI       |                           |
-|employeedata|employee_demographic     |gender              |varchar  |50                      |YES        |          |                           |
-|employeedata|employee_demographic     |race                |varchar  |50                      |YES        |          |                           |
-|employeedata|employee_demographic     |dob                 |date     |                        |NO         |MUL       |                           |
-|employeedata|employee_demographic     |address_line1       |varchar  |255                     |YES        |          |                           |
-|employeedata|employee_demographic     |address_line2       |varchar  |255                     |YES        |          |                           |
-|employeedata|employee_demographic     |city_id             |int      |                        |YES        |MUL       |                           |
-|employeedata|employee_demographic     |state_id            |int      |                        |YES        |MUL       |                           |
-|employeedata|employee_demographic     |country_id          |int      |                        |YES        |MUL       |                           |
-|employeedata|employee_division        |empid               |int      |                        |NO         |PRI       |                           |
-|employeedata|employee_division        |divid               |int      |                        |NO         |PRI       |                           |
-|employeedata|employee_division        |effective_start     |date     |                        |NO         |PRI       |                           |
-|employeedata|employee_division        |effective_end       |date     |                        |YES        |          |                           |
-|employeedata|employee_employment_types|employment_type_id  |int      |                        |NO         |MUL       |                           |
-|employeedata|employee_employment_types|empid               |int      |                        |NO         |PRI       |                           |
-|employeedata|employee_employment_types|is_active           |tinyint  |                        |NO         |          |                           |
-|employeedata|employee_job_title       |empid               |int      |                        |NO         |PRI       |                           |
-|employeedata|employee_job_title       |job_title_id        |int      |                        |NO         |PRI       |                           |
-|employeedata|employee_job_title       |effective_start     |date     |                        |NO         |PRI       |                           |
-|employeedata|employee_job_title       |effective_end       |date     |                        |YES        |          |                           |
-|employeedata|employee_status          |status_id           |int      |                        |NO         |PRI       |auto_increment             |
-|employeedata|employee_status          |empid               |int      |                        |NO         |MUL       |                           |
-|employeedata|employee_status          |status              |enum     |14                      |NO         |          |                           |
-|employeedata|employee_status          |hire_date           |date     |                        |NO         |          |                           |
-|employeedata|employee_status          |termination_date    |date     |                        |YES        |          |                           |
-|employeedata|employee_status          |effective_start     |date     |                        |NO         |          |DEFAULT_GENERATED          |
-|employeedata|employee_status          |effective_end       |date     |                        |YES        |          |                           |
-|employeedata|employees                |empid               |int      |                        |NO         |PRI       |auto_increment             |
-|employeedata|employees                |fname               |varchar  |65                      |NO         |          |                           |
-|employeedata|employees                |lname               |varchar  |65                      |NO         |MUL       |                           |
-|employeedata|employees                |salary              |decimal  |                        |NO         |          |                           |
-|employeedata|employees                |ssn_last4           |char     |4                       |NO         |          |                           |
-|employeedata|employees                |ssn_hash            |binary   |32                      |NO         |MUL       |                           |
-|employeedata|employees                |ssn_enc             |varbinary|256                     |NO         |          |                           |
-|employeedata|employees                |ssn_iv              |binary   |16                      |NO         |          |                           |
-|employeedata|employees                |created_at          |datetime |                        |NO         |          |DEFAULT_GENERATED          |
-|employeedata|employees                |updated_at          |datetime |                        |YES        |          |on update CURRENT_TIMESTAMP|
-|employeedata|employment_types         |employment_type_id  |int      |                        |NO         |PRI       |auto_increment             |
-|employeedata|employment_types         |employment_type_name|varchar  |64                      |NO         |UNI       |                           |
-|employeedata|job_titles               |job_title_id        |int      |                        |NO         |PRI       |auto_increment             |
-|employeedata|job_titles               |job_title           |varchar  |125                     |NO         |UNI       |                           |
-|employeedata|job_titles               |description         |varchar  |255                     |YES        |          |                           |
-|employeedata|payroll                  |payid               |int      |                        |NO         |PRI       |auto_increment             |
-|employeedata|payroll                  |payroll_run_id      |int      |                        |NO         |MUL       |                           |
-|employeedata|payroll                  |empid               |int      |                        |NO         |MUL       |                           |
-|employeedata|payroll                  |pay_date            |date     |                        |NO         |          |                           |
-|employeedata|payroll                  |earnings            |decimal  |                        |NO         |          |                           |
-|employeedata|payroll                  |fed_tax             |decimal  |                        |NO         |          |                           |
-|employeedata|payroll                  |fed_med             |decimal  |                        |NO         |          |                           |
-|employeedata|payroll                  |fed_ss              |decimal  |                        |NO         |          |                           |
-|employeedata|payroll                  |state_tax           |decimal  |                        |NO         |          |                           |
-|employeedata|payroll                  |retire_401k         |decimal  |                        |NO         |          |                           |
-|employeedata|payroll                  |health_care         |decimal  |                        |NO         |          |                           |
-|employeedata|payroll                  |net_pay             |decimal  |                        |NO         |          |                           |
-|employeedata|payroll                  |created_at          |datetime |                        |NO         |          |DEFAULT_GENERATED          |
-|employeedata|payroll_runs             |payroll_run_id      |int      |                        |NO         |PRI       |auto_increment             |
-|employeedata|payroll_runs             |run_year            |year     |                        |NO         |          |                           |
-|employeedata|payroll_runs             |run_month           |tinyint  |                        |NO         |          |                           |
-|employeedata|payroll_runs             |run_date            |datetime |                        |NO         |          |DEFAULT_GENERATED          |
-|employeedata|payroll_runs             |description         |varchar  |255                     |YES        |          |                           |
-|employeedata|roles                    |role_id             |int      |                        |NO         |PRI       |auto_increment             |
-|employeedata|roles                    |role_name           |varchar  |64                      |NO         |UNI       |                           |
-|employeedata|roles                    |description         |varchar  |255                     |YES        |          |                           |
-|employeedata|salary_history           |salary_history_id   |bigint   |                        |NO         |PRI       |auto_increment             |
-|employeedata|salary_history           |empid               |int      |                        |NO         |MUL       |                           |
-|employeedata|salary_history           |previous_salary     |decimal  |                        |NO         |          |                           |
-|employeedata|salary_history           |new_salary          |decimal  |                        |NO         |          |                           |
-|employeedata|salary_history           |change_reason       |varchar  |255                     |YES        |          |                           |
-|employeedata|salary_history           |changed_by_user_id  |int      |                        |NO         |MUL       |                           |
-|employeedata|salary_history           |changed_at          |datetime |                        |NO         |          |DEFAULT_GENERATED          |
-|employeedata|states                   |stateid             |int      |                        |NO         |PRI       |auto_increment             |
-|employeedata|states                   |state_abbreviation  |varchar  |3                       |NO         |UNI       |                           |
-|employeedata|states                   |state_name          |varchar  |125                     |NO         |          |                           |
-|employeedata|user_employee_link       |user_id             |int      |                        |NO         |PRI       |                           |
-|employeedata|user_employee_link       |empid               |int      |                        |NO         |PRI       |                           |
-|employeedata|user_roles               |user_id             |int      |                        |NO         |PRI       |                           |
-|employeedata|user_roles               |role_id             |int      |                        |NO         |PRI       |                           |
-|employeedata|users                    |user_id             |int      |                        |NO         |PRI       |auto_increment             |
-|employeedata|users                    |username            |varchar  |64                      |NO         |UNI       |                           |
-|employeedata|users                    |password_hash       |varbinary|256                     |NO         |          |                           |
-|employeedata|users                    |password_salt       |varbinary|64                      |NO         |          |                           |
-|employeedata|users                    |is_active           |tinyint  |                        |NO         |          |                           |
-|employeedata|users                    |created_at          |datetime |                        |NO         |          |DEFAULT_GENERATED          |
-|employeedata|users                    |updated_at          |datetime |                        |YES        |          |on update CURRENT_TIMESTAMP|
+|TABLE_NAME               |COLUMN_NAME         |DATA_TYPE|IS_NULLABLE|COLUMN_KEY|COLUMN_DEFAULT   |
+|-------------------------|--------------------|---------|-----------|----------|-----------------|
+|auth_events              |auth_event_id       |bigint   |NO         |PRI       |                 |
+|auth_events              |user_id             |int      |YES        |MUL       |                 |
+|auth_events              |event_type          |varchar  |NO         |          |                 |
+|auth_events              |event_time          |datetime |NO         |          |CURRENT_TIMESTAMP|
+|auth_events              |ip_address          |varchar  |YES        |          |                 |
+|auth_events              |user_agent          |varchar  |YES        |          |                 |
+|change_log               |change_id           |bigint   |NO         |PRI       |                 |
+|change_log               |table_name          |varchar  |NO         |MUL       |                 |
+|change_log               |record_pk           |varchar  |NO         |          |                 |
+|change_log               |operation           |enum     |NO         |          |                 |
+|change_log               |changed_by_user_id  |int      |NO         |MUL       |                 |
+|change_log               |changed_at          |datetime |NO         |          |CURRENT_TIMESTAMP|
+|change_log               |old_values          |json     |YES        |          |                 |
+|change_log               |new_values          |json     |YES        |          |                 |
+|cities                   |cityid              |int      |NO         |PRI       |                 |
+|cities                   |city_name           |varchar  |NO         |          |                 |
+|cities                   |stateid             |int      |YES        |MUL       |                 |
+|cities                   |countryid           |int      |YES        |MUL       |                 |
+|contact_types            |contact_type_id     |int      |NO         |PRI       |                 |
+|contact_types            |type_name           |varchar  |NO         |UNI       |                 |
+|countries                |countryid           |int      |NO         |PRI       |                 |
+|countries                |country_abbreviation|varchar  |NO         |UNI       |                 |
+|countries                |country_name        |varchar  |NO         |          |                 |
+|divisions                |divid               |int      |NO         |PRI       |                 |
+|divisions                |name                |varchar  |NO         |          |                 |
+|divisions                |description         |varchar  |YES        |          |                 |
+|divisions                |cityid              |int      |NO         |MUL       |                 |
+|divisions                |address_line1       |varchar  |NO         |          |                 |
+|divisions                |address_line2       |varchar  |YES        |          |                 |
+|divisions                |stateid             |int      |YES        |MUL       |                 |
+|divisions                |countryid           |int      |NO         |MUL       |                 |
+|divisions                |zip_code            |varchar  |NO         |          |                 |
+|divisions                |is_active           |tinyint  |NO         |          |1                |
+|employee_contact         |contact_id          |int      |NO         |PRI       |                 |
+|employee_contact         |empid               |int      |NO         |MUL       |                 |
+|employee_contact         |contact_type_id     |int      |NO         |MUL       |                 |
+|employee_contact         |contact_value       |varchar  |NO         |          |                 |
+|employee_contact         |is_primary          |tinyint  |YES        |          |0                |
+|employee_demographic     |empid               |int      |NO         |PRI       |                 |
+|employee_demographic     |gender              |varchar  |YES        |          |                 |
+|employee_demographic     |race                |varchar  |YES        |          |                 |
+|employee_demographic     |dob                 |date     |NO         |MUL       |                 |
+|employee_demographic     |address_line1       |varchar  |YES        |          |                 |
+|employee_demographic     |address_line2       |varchar  |YES        |          |                 |
+|employee_demographic     |city_id             |int      |YES        |MUL       |                 |
+|employee_demographic     |state_id            |int      |YES        |MUL       |                 |
+|employee_demographic     |country_id          |int      |YES        |MUL       |                 |
+|employee_demographic     |zip_code            |varchar  |YES        |          |                 |
+|employee_division        |empid               |int      |NO         |PRI       |                 |
+|employee_division        |divid               |int      |NO         |PRI       |                 |
+|employee_division        |effective_start     |date     |NO         |PRI       |                 |
+|employee_division        |effective_end       |date     |YES        |          |                 |
+|employee_employment_types|employment_type_id  |int      |NO         |MUL       |                 |
+|employee_employment_types|empid               |int      |NO         |PRI       |                 |
+|employee_employment_types|is_active           |tinyint  |NO         |          |1                |
+|employee_job_title       |empid               |int      |NO         |PRI       |                 |
+|employee_job_title       |job_title_id        |int      |NO         |PRI       |                 |
+|employee_job_title       |effective_start     |date     |NO         |PRI       |                 |
+|employee_job_title       |effective_end       |date     |YES        |          |                 |
+|employee_status          |status_id           |int      |NO         |PRI       |                 |
+|employee_status          |empid               |int      |NO         |MUL       |                 |
+|employee_status          |status              |enum     |NO         |          |                 |
+|employee_status          |hire_date           |date     |NO         |          |                 |
+|employee_status          |termination_date    |date     |YES        |          |                 |
+|employee_status          |effective_start     |date     |NO         |          |curdate()        |
+|employee_status          |effective_end       |date     |YES        |          |                 |
+|employees                |empid               |int      |NO         |PRI       |                 |
+|employees                |fname               |varchar  |NO         |          |                 |
+|employees                |lname               |varchar  |NO         |MUL       |                 |
+|employees                |salary              |decimal  |NO         |          |                 |
+|employees                |ssn_last4           |char     |NO         |          |                 |
+|employees                |ssn_hash            |binary   |NO         |MUL       |                 |
+|employees                |ssn_enc             |varbinary|NO         |          |                 |
+|employees                |ssn_iv              |binary   |NO         |          |                 |
+|employees                |created_at          |datetime |NO         |          |CURRENT_TIMESTAMP|
+|employees                |updated_at          |datetime |YES        |          |                 |
+|employment_types         |employment_type_id  |int      |NO         |PRI       |                 |
+|employment_types         |employment_type_name|varchar  |NO         |UNI       |                 |
+|job_titles               |job_title_id        |int      |NO         |PRI       |                 |
+|job_titles               |job_title           |varchar  |NO         |UNI       |                 |
+|job_titles               |description         |varchar  |YES        |          |                 |
+|payroll                  |payid               |int      |NO         |PRI       |                 |
+|payroll                  |payroll_run_id      |int      |NO         |MUL       |                 |
+|payroll                  |empid               |int      |NO         |MUL       |                 |
+|payroll                  |pay_date            |date     |NO         |          |                 |
+|payroll                  |earnings            |decimal  |NO         |          |                 |
+|payroll                  |fed_tax             |decimal  |NO         |          |0.00             |
+|payroll                  |fed_med             |decimal  |NO         |          |0.00             |
+|payroll                  |fed_ss              |decimal  |NO         |          |0.00             |
+|payroll                  |state_tax           |decimal  |NO         |          |0.00             |
+|payroll                  |retire_401k         |decimal  |NO         |          |0.00             |
+|payroll                  |health_care         |decimal  |NO         |          |0.00             |
+|payroll                  |net_pay             |decimal  |NO         |          |                 |
+|payroll                  |created_at          |datetime |NO         |          |CURRENT_TIMESTAMP|
+|payroll_runs             |payroll_run_id      |int      |NO         |PRI       |                 |
+|payroll_runs             |run_year            |year     |NO         |          |                 |
+|payroll_runs             |run_month           |tinyint  |NO         |          |                 |
+|payroll_runs             |run_date            |datetime |NO         |          |CURRENT_TIMESTAMP|
+|payroll_runs             |description         |varchar  |YES        |          |                 |
+|roles                    |role_id             |int      |NO         |PRI       |                 |
+|roles                    |role_name           |varchar  |NO         |UNI       |                 |
+|roles                    |description         |varchar  |YES        |          |                 |
+|salary_history           |salary_history_id   |bigint   |NO         |PRI       |                 |
+|salary_history           |empid               |int      |NO         |MUL       |                 |
+|salary_history           |previous_salary     |decimal  |NO         |          |                 |
+|salary_history           |new_salary          |decimal  |NO         |          |                 |
+|salary_history           |change_reason       |varchar  |YES        |          |                 |
+|salary_history           |changed_by_user_id  |int      |NO         |MUL       |                 |
+|salary_history           |changed_at          |datetime |NO         |          |CURRENT_TIMESTAMP|
+|states                   |stateid             |int      |NO         |PRI       |                 |
+|states                   |state_abbreviation  |varchar  |NO         |UNI       |                 |
+|states                   |state_name          |varchar  |NO         |          |                 |
+|user_employee_link       |user_id             |int      |NO         |PRI       |                 |
+|user_employee_link       |empid               |int      |NO         |PRI       |                 |
+|user_roles               |user_id             |int      |NO         |PRI       |                 |
+|user_roles               |role_id             |int      |NO         |PRI       |                 |
+|users                    |user_id             |int      |NO         |PRI       |                 |
+|users                    |username            |varchar  |NO         |UNI       |                 |
+|users                    |password_hash       |varbinary|NO         |          |                 |
+|users                    |password_salt       |varbinary|NO         |          |                 |
+|users                    |is_active           |tinyint  |NO         |          |1                |
+|users                    |created_at          |datetime |NO         |          |CURRENT_TIMESTAMP|
+|users                    |updated_at          |datetime |YES        |          |                 |
