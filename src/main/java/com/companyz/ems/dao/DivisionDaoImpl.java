@@ -18,13 +18,13 @@ import com.companyz.ems.model.Division;
 public class DivisionDaoImpl extends AbstractDao implements DivisionDao {
 
     @Override
-    public Optional<Division> findById(int divisionId) {
-        String sql = "SELECT division_id, division_name, description, is_active, " +
-                     "address_line1, address_line2, city, state, country, postal_code " +
-                     "FROM divisions WHERE division_id = ?";
+    public Optional<Division> findById(int divid) {
+        String sql = "SELECT divid, name, description, is_active, " +
+                    "address_line1, address_line2, zip_code " +
+                    "FROM divisions WHERE divid = ?";
         try (Connection conn = getConnection();
-             PreparedStatement stmt = prepareStatement(conn, sql, divisionId);
-             ResultSet rs = stmt.executeQuery()) {
+            PreparedStatement stmt = prepareStatement(conn, sql, divid);
+            ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
                 return Optional.of(mapDivision(rs));
             }
@@ -36,17 +36,17 @@ public class DivisionDaoImpl extends AbstractDao implements DivisionDao {
 
     @Override
     public Optional<Division> findByName(String divisionName) {
-        String sql = "SELECT division_id, division_name, description, is_active, " +
-                     "address_line1, address_line2, city, state, country, postal_code " +
-                     "FROM divisions WHERE division_name = ?";
+        String sql = "SELECT divid, name, description, is_active, " +
+                    "address_line1, address_line2, zip_code " +
+                    "FROM divisions WHERE name = ?";
         try (Connection conn = getConnection();
-             PreparedStatement stmt = prepareStatement(conn, sql, divisionName);
-             ResultSet rs = stmt.executeQuery()) {
+            PreparedStatement stmt = prepareStatement(conn, sql, divisionName);
+            ResultSet rs = stmt.executeQuery()) {
             if (rs.next()) {
                 return Optional.of(mapDivision(rs));
             }
         } catch (SQLException e) {
-            e.printStackTrace(); // replace with logger
+            e.printStackTrace();
         }
         return Optional.empty();
     }
@@ -54,12 +54,11 @@ public class DivisionDaoImpl extends AbstractDao implements DivisionDao {
     @Override
     public List<Division> findAll() {
         List<Division> divisions = new ArrayList<>();
-        String sql = "SELECT division_id, division_name, description, is_active, " +
-                     "address_line1, address_line2, city, state, country, postal_code " +
-                     "FROM divisions";
+        String sql = "SELECT divid, name, description, is_active, " +
+                    "address_line1, address_line2, zip_code FROM divisions";
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+            PreparedStatement stmt = conn.prepareStatement(sql);
+            ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 divisions.add(mapDivision(rs));
             }
@@ -71,11 +70,10 @@ public class DivisionDaoImpl extends AbstractDao implements DivisionDao {
 
     @Override
     public Division createDivision(Division division) {
-        String sql = "INSERT INTO divisions (division_name, description, is_active, " +
-                     "address_line1, address_line2, city, state, country, postal_code) " +
-                     "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO divisions (name, description, is_active, " +
+                    "address_line1, address_line2, zip_code) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, division.getDivisionName());
             stmt.setString(2, division.getDescription());
             stmt.setBoolean(3, division.getIsActive() != null ? division.getIsActive() : true);
@@ -83,10 +81,8 @@ public class DivisionDaoImpl extends AbstractDao implements DivisionDao {
             Address addr = division.getAddress();
             stmt.setString(4, addr != null ? addr.getAddressLine1() : null);
             stmt.setString(5, addr != null ? addr.getAddressLine2() : null);
-            stmt.setString(6, addr != null ? addr.getCity() : null);
-            stmt.setString(7, addr != null ? addr.getState() : null);
-            stmt.setString(8, addr != null ? addr.getCountry() : null);
-            stmt.setString(9, addr != null ? addr.getPostalCode() : null);
+            stmt.setString(6, addr != null ? addr.getPostalCode() : null);
+
             stmt.executeUpdate();
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
@@ -103,11 +99,10 @@ public class DivisionDaoImpl extends AbstractDao implements DivisionDao {
 
     @Override
     public Division updateDivision(Division division) {
-        String sql = "UPDATE divisions SET division_name = ?, description = ?, is_active = ?, " +
-                     "address_line1 = ?, address_line2 = ?, city = ?, state = ?, country = ?, postal_code = ? " +
-                     "WHERE division_id = ?";
+        String sql = "UPDATE divisions SET name=?, description=?, is_active=?, " +
+                    "address_line1=?, address_line2=?, zip_code=? WHERE divid=?";
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, division.getDivisionName());
             stmt.setString(2, division.getDescription());
             stmt.setBoolean(3, division.getIsActive() != null ? division.getIsActive() : true);
@@ -115,12 +110,9 @@ public class DivisionDaoImpl extends AbstractDao implements DivisionDao {
             Address addr = division.getAddress();
             stmt.setString(4, addr != null ? addr.getAddressLine1() : null);
             stmt.setString(5, addr != null ? addr.getAddressLine2() : null);
-            stmt.setString(6, addr != null ? addr.getCity() : null);
-            stmt.setString(7, addr != null ? addr.getState() : null);
-            stmt.setString(8, addr != null ? addr.getCountry() : null);
-            stmt.setString(9, addr != null ? addr.getPostalCode() : null);
+            stmt.setString(6, addr != null ? addr.getPostalCode() : null);
 
-            stmt.setInt(10, division.getDivisionId());
+            stmt.setInt(7, division.getDivisionId());
 
             stmt.executeUpdate();
             return division;
@@ -131,10 +123,10 @@ public class DivisionDaoImpl extends AbstractDao implements DivisionDao {
     }
 
     @Override
-    public boolean deleteDivision(int divisionId) {
-        String sql = "DELETE FROM divisions WHERE division_id = ?";
+    public boolean deleteDivision(int divid) {
+        String sql = "DELETE FROM divisions WHERE divid=?";
         try (Connection conn = getConnection();
-             PreparedStatement stmt = prepareStatement(conn, sql, divisionId)) {
+            PreparedStatement stmt = prepareStatement(conn, sql, divid)) {
             return stmt.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -147,20 +139,18 @@ public class DivisionDaoImpl extends AbstractDao implements DivisionDao {
      */
     private Division mapDivision(ResultSet rs) throws SQLException {
         Division division = new Division();
-        division.setDivisionId(rs.getInt("division_id"));
-        division.setDivisionName(rs.getString("division_name"));
+        division.setDivisionId(rs.getInt("divid"));
+        division.setDivisionName(rs.getString("name"));
         division.setDescription(rs.getString("description"));
         division.setIsActive(rs.getBoolean("is_active"));
 
         Address address = new Address();
         address.setAddressLine1(rs.getString("address_line1"));
         address.setAddressLine2(rs.getString("address_line2"));
-        address.setCity(rs.getString("city"));
-        address.setState(rs.getString("state"));
-        address.setCountry(rs.getString("country"));
-        address.setPostalCode(rs.getString("postal_code"));
+        address.setPostalCode(rs.getString("zip_code"));
         division.setAddress(address);
 
         return division;
     }
+
 }

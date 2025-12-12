@@ -1,6 +1,5 @@
 package com.companyz.ems.ui;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,16 +76,44 @@ public class EmployeesUI {
 
         // Employee table
         TableView<Employee> employeeTable = new TableView<>();
+
         TableColumn<Employee, Integer> idCol = new TableColumn<>("Employee ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("empId"));
+
         TableColumn<Employee, String> firstNameCol = new TableColumn<>("First Name");
         firstNameCol.setCellValueFactory(new PropertyValueFactory<>("firstName"));
+
         TableColumn<Employee, String> lastNameCol = new TableColumn<>("Last Name");
         lastNameCol.setCellValueFactory(new PropertyValueFactory<>("lastName"));
-        TableColumn<Employee, LocalDate> dobCol = new TableColumn<>("DOB");
-        dobCol.setCellValueFactory(new PropertyValueFactory<>("dob"));
-        employeeTable.getColumns().addAll(idCol, firstNameCol, lastNameCol, dobCol);
+
+        TableColumn<Employee, String> phoneCol = new TableColumn<>("Phone");
+        phoneCol.setCellValueFactory(new PropertyValueFactory<>("primaryPhoneNumber"));
+
+        TableColumn<Employee, String> emailCol = new TableColumn<>("Email");
+        emailCol.setCellValueFactory(new PropertyValueFactory<>("primaryEmail"));
+
+        TableColumn<Employee, String> divisionCol = new TableColumn<>("Division");
+        divisionCol.setCellValueFactory(new PropertyValueFactory<>("divisionString"));
+
+        TableColumn<Employee, String> jobTitleCol = new TableColumn<>("Job Title");
+        jobTitleCol.setCellValueFactory(new PropertyValueFactory<>("jobTitleString"));
+
+        TableColumn<Employee, String> typeCol = new TableColumn<>("Employment Type");
+        typeCol.setCellValueFactory(new PropertyValueFactory<>("employmentTypeString"));
+
+        TableColumn<Employee, String> statusCol = new TableColumn<>("Status");
+        statusCol.setCellValueFactory(new PropertyValueFactory<>("employmentStatusString"));
+
+        TableColumn<Employee, Double> salaryCol = new TableColumn<>("Salary");
+        salaryCol.setCellValueFactory(new PropertyValueFactory<>("salary"));
+
+        employeeTable.getColumns().addAll(
+            idCol, firstNameCol, lastNameCol, phoneCol, emailCol,
+            divisionCol, jobTitleCol, typeCol, statusCol, salaryCol
+        );
+
         employeeTable.setPrefHeight(400);
+
 
         // Action buttons
         HBox actionBox = new HBox(10);
@@ -163,7 +190,7 @@ public class EmployeesUI {
                     return;
                 }
                 if (!firstNameField.getText().trim().isEmpty() && !lastNameField.getText().trim().isEmpty()) {
-                    Optional<Employee> res = employeeService.getEmployeeByName(session,
+                    Optional<Employee> res = employeeService.searchByName(session,
                             firstNameField.getText().trim(), lastNameField.getText().trim());
                     employeeTable.getItems().setAll(res.map(List::of).orElseGet(List::of));
                     return;

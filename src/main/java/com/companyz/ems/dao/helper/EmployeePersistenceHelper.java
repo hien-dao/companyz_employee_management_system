@@ -8,9 +8,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.companyz.ems.model.Address;
 import com.companyz.ems.model.Contact;
 import com.companyz.ems.model.employee.BaseEmployee;
-import com.companyz.ems.model.employee.FullTimeEmployee;
 
 /**
  * EmployeePersistenceHelper
@@ -65,6 +65,30 @@ public class EmployeePersistenceHelper {
     }
 
     // --- DEMOGRAPHICS ---
+    public static void loadDemographics(Connection conn, BaseEmployee emp) throws SQLException {
+        String sql = "SELECT gender, race, dob, address_line1, address_line2, city_id, state_id, country_id, zip_code " +
+                    "FROM employee_demographic WHERE empid=?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, emp.getEmpId());
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    emp.setGender(rs.getString("gender"));
+                    emp.setRace(rs.getString("race"));
+                    emp.setDob(rs.getDate("dob") != null ? rs.getDate("dob").toLocalDate() : null);
+
+                    Address addr = new Address();
+                    addr.setAddressLine1(rs.getString("address_line1"));
+                    addr.setAddressLine2(rs.getString("address_line2"));
+                    addr.setCity(resolveCityName(conn, rs.getInt("city_id")));
+                    addr.setState(resolveStateName(conn, rs.getInt("state_id")));
+                    addr.setCountry(resolveCountryName(conn, rs.getInt("country_id")));
+                    addr.setPostalCode(rs.getString("zip_code"));
+                    emp.setAddress(addr);
+                }
+            }
+        }
+    }
+
     public static void saveDemographics(Connection conn, BaseEmployee emp) throws SQLException {
         String sql = "INSERT INTO employee_demographic (empid, gender, race, dob, address_line1, address_line2, city_id, state_id, country_id) " +
                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -194,6 +218,18 @@ public class EmployeePersistenceHelper {
         return null;
     }
 
+    public static void loadHireDate(Connection conn, BaseEmployee emp) throws SQLException {
+        String sql = "SELECT hire_date FROM employee_status WHERE empid=?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, emp.getEmpId());
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    emp.setHireDate(rs.getDate("hire_date") != null ? rs.getDate("hire_date").toLocalDate() : null);
+                }
+            }
+        }
+    }
+
     // --- SALARY HISTORY ---
     public static void saveSalaryHistory(Connection conn, BaseEmployee emp, double previousSalary, double newSalary, int changedByUserId) throws SQLException {
         String sql = "INSERT INTO salary_history (empid, previous_salary, new_salary, change_reason, changed_by_user_id, changed_at) " +
@@ -295,35 +331,83 @@ public class EmployeePersistenceHelper {
     }
 
     public static void updateEmploymentType(Connection conn, BaseEmployee employee) throws SQLException {
-        String sql = "UPDATE employee_employment_types SET employment_type_id=? WHERE empid=?";
         int typeId = employee.getEmployeeTypeId();
         if (typeId == 0) return;
 
-        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, typeId);
-            stmt.setInt(2, employee.getEmpId());
+        // deactivate old
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "UPDATE employee_employment_types SET is_active=0 WHERE empid=?")) {
+            stmt.setInt(1, employee.getEmpId());
+            stmt.executeUpdate();
+        }
+
+        // insert new active
+        try (PreparedStatement stmt = conn.prepareStatement(
+                "INSERT INTO employee_employment_types (empid, employment_type_id, is_active) VALUES (?, ?, 1)")) {
+            stmt.setInt(1, employee.getEmpId());
+            stmt.setInt(2, typeId);
             stmt.executeUpdate();
         }
     }
 
-    public static void loadEmploymentType(Connection conn, BaseEmployee employee) throws SQLException {
-        String sql = "SELECT eet.employment_type_id, et.employment_type_name " +
+
+    public static String loadEmploymentType(Connection conn, int empId) throws SQLException {
+        String sql = "SELECT et.employment_type_name " +
                     "FROM employee_employment_types eet " +
                     "JOIN employment_types et ON eet.employment_type_id = et.employment_type_id " +
                     "WHERE eet.empid = ? AND eet.is_active = 1";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, employee.getEmpId());
+            stmt.setInt(1, empId);
             try (ResultSet rs = stmt.executeQuery()) {
                 if (rs.next()) {
-                    int typeId = rs.getInt("employment_type_id");
-                    String typeName = rs.getString("employment_type_name");
-
-                    employee.setEmployeeTypeId(typeId);
-                    if (employee instanceof FullTimeEmployee) {
-                        ((FullTimeEmployee) employee).setEmploymentTypeString(typeName);
-                    }
+                    return rs.getString("employment_type_name");
                 }
             }
         }
+        return null;
     }
+
+    private static String resolveCityName(Connection conn, int cityId) throws SQLException {
+        if (cityId == 0) return null;
+        String sql = "SELECT city_name FROM cities WHERE cityid=?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, cityId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("city_name");
+                }
+            }
+        }
+        return null;
+    }
+
+    private static String resolveStateName(Connection conn, int stateId) throws SQLException {
+        if (stateId == 0) return null;
+        String sql = "SELECT state_name FROM states WHERE stateid=?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, stateId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("state_name");
+                }
+            }
+        }
+        return null;
+    }
+
+    private static String resolveCountryName(Connection conn, int countryId) throws SQLException {
+        if (countryId == 0) return null;
+        String sql = "SELECT country_name FROM countries WHERE countryid=?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, countryId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("country_name");
+                }
+            }
+        }
+        return null;
+    }
+
+
 }

@@ -14,7 +14,7 @@ public class JobTitleDaoImpl extends AbstractDao implements JobTitleDao {
 
     @Override
     public Optional<JobTitle> findById(int jobTitleId) {
-        String sql = "SELECT job_title_id, title_name, description FROM job_titles WHERE job_title_id = ?";
+        String sql = "SELECT job_title_id, job_title, description FROM job_titles WHERE job_title_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = prepareStatement(conn, sql, jobTitleId);
              ResultSet rs = stmt.executeQuery()) {
@@ -29,7 +29,7 @@ public class JobTitleDaoImpl extends AbstractDao implements JobTitleDao {
 
     @Override
     public Optional<JobTitle> findByName(String jobTitleName) {
-        String sql = "SELECT job_title_id, title_name, description FROM job_titles WHERE title_name = ?";
+        String sql = "SELECT job_title_id, job_title, description FROM job_titles WHERE job_title = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = prepareStatement(conn, sql, jobTitleName);
              ResultSet rs = stmt.executeQuery()) {
@@ -45,7 +45,7 @@ public class JobTitleDaoImpl extends AbstractDao implements JobTitleDao {
     @Override
     public List<JobTitle> findAll() {
         List<JobTitle> titles = new ArrayList<>();
-        String sql = "SELECT job_title_id, title_name, description FROM job_titles";
+        String sql = "SELECT job_title_id, job_title, description FROM job_titles";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -60,9 +60,9 @@ public class JobTitleDaoImpl extends AbstractDao implements JobTitleDao {
 
     @Override
     public JobTitle createJobTitle(JobTitle jobTitle) {
-        String sql = "INSERT INTO job_titles (title_name, description) VALUES (?, ?)";
+        String sql = "INSERT INTO job_titles (job_title, description) VALUES (?, ?)";
         try (Connection conn = getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, jobTitle.getTitleName());
             stmt.setString(2, jobTitle.getDescription());
             stmt.executeUpdate();
@@ -81,7 +81,7 @@ public class JobTitleDaoImpl extends AbstractDao implements JobTitleDao {
 
     @Override
     public JobTitle updateJobTitle(JobTitle jobTitle) {
-        String sql = "UPDATE job_titles SET title_name = ?, description = ? WHERE job_title_id = ?";
+        String sql = "UPDATE job_titles SET job_title = ?, description = ? WHERE job_title_id = ?";
         try (Connection conn = getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, jobTitle.getTitleName());
@@ -110,7 +110,7 @@ public class JobTitleDaoImpl extends AbstractDao implements JobTitleDao {
     private JobTitle mapJobTitle(ResultSet rs) throws SQLException {
         JobTitle jobTitle = new JobTitle();
         jobTitle.setJobTitleId(rs.getInt("job_title_id"));
-        jobTitle.setTitleName(rs.getString("title_name"));
+        jobTitle.setTitleName(rs.getString("job_title"));
         jobTitle.setDescription(rs.getString("description"));
         return jobTitle;
     }

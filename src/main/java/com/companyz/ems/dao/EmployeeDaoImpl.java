@@ -300,12 +300,19 @@ public class EmployeeDaoImpl extends AbstractDao implements EmployeeDao {
         emp.setSsnHash(rs.getString("ssn_hash"));
         emp.setSsnEnc(rs.getBytes("ssn_enc"));
         emp.setSsnIv(rs.getBytes("ssn_iv"));
+        emp.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        emp.setUpdatedAt(rs.getTimestamp("updated_at").toLocalDateTime());
 
         // Load related info via helper
         emp.setContacts(EmployeePersistenceHelper.loadContacts(conn, emp.getEmpId()));
         emp.setDivisionString(EmployeePersistenceHelper.loadDivision(conn, emp.getEmpId()));
         emp.setJobTitleString(EmployeePersistenceHelper.loadJobTitle(conn, emp.getEmpId()));
         emp.setEmploymentStatusString(EmployeePersistenceHelper.loadStatus(conn, emp.getEmpId()));
+        emp.setEmploymentTypeString(EmployeePersistenceHelper.loadEmploymentType(conn, emp.getEmpId()));
+
+        // New helpers
+        EmployeePersistenceHelper.loadDemographics(conn, emp);
+        EmployeePersistenceHelper.loadHireDate(conn, emp);
 
         return emp;
     }

@@ -14,7 +14,6 @@ import com.companyz.ems.security.SessionContext;
 public interface EmployeeService {
 
     // --- Employee CRUD ---
-    Optional<Employee> getEmployeeByName(SessionContext ctx, String firstName, String lastName);
     List<Employee> getAllEmployees(SessionContext ctx);
 
     boolean createEmployee(SessionContext ctx,

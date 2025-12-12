@@ -16,6 +16,7 @@ import com.companyz.ems.dao.PayrollDao;
 import com.companyz.ems.dao.PayrollDaoImpl;
 import com.companyz.ems.model.Division;
 import com.companyz.ems.model.Payroll;
+import com.companyz.ems.model.employee.BaseEmployee;
 import com.companyz.ems.model.employee.Employee;
 import com.companyz.ems.model.employee.EmploymentStatus;
 import com.companyz.ems.model.employee.FullTimeEmployee;
@@ -61,12 +62,6 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     // --- Employee CRUD ---
-    @Override
-    public Optional<Employee> getEmployeeByName(SessionContext ctx, String firstName, String lastName) {
-        authzService.requireAdmin(ctx);
-        return employeeDao.findByName(firstName, lastName);
-    }
-
     @Override
     public List<Employee> getAllEmployees(SessionContext ctx) {
         authzService.requireAdmin(ctx);
@@ -188,8 +183,26 @@ public class EmployeeServiceImpl implements EmployeeService {
     // --- Employee Self Access ---
     @Override
     public Optional<Employee> getSelfEmployeeInfo(SessionContext ctx) {
-        return employeeDao.findById(ctx.getEmployeeId());
+        // Base employee record from EmployeeDao
+        Optional<Employee> empOpt = employeeDao.findById(ctx.getEmployeeId());
+
+        empOpt.ifPresent(emp -> {
+            // Division
+            divisionDao.findById(((BaseEmployee) emp).getDivisionId())
+                    .ifPresent(div -> ((FullTimeEmployee) emp).setDivisionString(div.getDivisionName()));
+
+            // Job Title
+            jobTitleDao.findById(((BaseEmployee) emp).getJobTitleId())
+                    .ifPresent(jt -> ((FullTimeEmployee) emp).setJobTitleString(jt.getTitleName()));
+
+            // Employment Status
+            statusDao.findById(((BaseEmployee) emp).getEmploymentStatusId())
+                    .ifPresent(st -> ((FullTimeEmployee) emp).setEmploymentStatusString(st.getStatusName()));
+        });
+
+        return empOpt;
     }
+
 
     // --- Employee Search ---
     @Override
